@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RART Detection Wizard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #ffffff; min-height: 100vh; padding: 15px; }
+        .wizard-container { max-width: 750px; margin: 0 auto; }
+        .header { text-align: center; margin-bottom: 15px; }
+        .header h1 { color: #172b4d; font-size: 22px; margin-bottom: 3px; }
+        .header p { color: #6b778c; font-size: 13px; }
+        .progress-bar { display: flex; justify-content: space-between; margin-bottom: 15px; padding: 0 5px; }
+        .progress-step { display: flex; flex-direction: column; align-items: center; flex: 1; position: relative; }
+        .progress-step::after { content: ''; position: absolute; top: 12px; left: 50%; width: 100%; height: 2px; background: #dfe1e6; z-index: 0; }
+        .progress-step:last-child::after { display: none; }
+        .progress-circle { width: 24px; height: 24px; border-radius: 50%; background: #dfe1e6; color: #6b778c; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; z-index: 1; transition: all 0.3s; }
+        .progress-step.active .progress-circle { background: #0052cc; color: white; }
+        .progress-step.completed .progress-circle { background: #36b37e; color: white; }
+        .progress-step.completed::after { background: #36b37e; }
+        .progress-label { font-size: 9px; color: #6b778c; margin-top: 3px; text-align: center; }
+        .card { background: #f4f5f7; border-radius: 8px; padding: 20px; display: none; }
+        .card.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .card h2 { color: #172b4d; font-size: 17px; margin-bottom: 5px; }
+        .card .subtitle { color: #6b778c; font-size: 13px; margin-bottom: 18px; }
+        .btn-group { display: flex; gap: 10px; flex-wrap: wrap; }
+        .btn { padding: 14px 18px; border: 2px solid #dfe1e6; border-radius: 6px; background: white; color: #172b4d; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s; flex: 1; min-width: 120px; text-align: center; }
+        .btn:hover { border-color: #0052cc; background: #f4f5f7; }
+        .btn.selected { border-color: #0052cc; background: #deebff; color: #0052cc; }
+        .btn-icon { font-size: 24px; display: block; margin-bottom: 8px; }
+        .btn-label { display: block; font-size: 13px; font-weight: 600; }
+        .btn-detail { display: block; font-size: 11px; color: #6b778c; margin-top: 4px; line-height: 1.3; }
+        .result-card { background: linear-gradient(135deg, #0052cc 0%, #0747a6 100%); color: white; padding: 30px; border-radius: 8px; text-align: center; margin-bottom: 15px; }
+        .result-card h3 { font-size: 14px; margin-bottom: 10px; opacity: 0.9; }
+        .result-rart { font-size: 56px; font-weight: 700; margin-bottom: 5px; }
+        .result-name { font-size: 16px; opacity: 0.9; margin-bottom: 15px; }
+        .result-card.rart-0 { background: linear-gradient(135deg, #00875A 0%, #006644 100%); }
+        .result-card.rart-1 { background: linear-gradient(135deg, #36B37E 0%, #00875A 100%); }
+        .result-card.rart-2 { background: linear-gradient(135deg, #00B8D9 0%, #0065FF 100%); }
+        .result-card.rart-3 { background: linear-gradient(135deg, #6554C0 0%, #403294 100%); }
+        .result-card.rart-4 { background: linear-gradient(135deg, #8777D9 0%, #6554C0 100%); }
+        .result-card.rart-5 { background: linear-gradient(135deg, #FF8B00 0%, #FF5630 100%); }
+        .result-card.rart-6 { background: linear-gradient(135deg, #FFAB00 0%, #FF8B00 100%); }
+        .result-card.rart-7 { background: linear-gradient(135deg, #0065FF 0%, #0052CC 100%); }
+        .result-card.rart-8 { background: linear-gradient(135deg, #4C9AFF 0%, #0065FF 100%); }
+        .result-card.rart-9 { background: linear-gradient(135deg, #FF5630 0%, #DE350B 100%); }
+        .result-card.rart-10 { background: linear-gradient(135deg, #FF7452 0%, #FF5630 100%); }
+        .result-card.rart-11 { background: linear-gradient(135deg, #505F79 0%, #344563 100%); }
+        .result-card.rart-12 { background: linear-gradient(135deg, #6B778C 0%, #505F79 100%); }
+        .result-card.rart-15 { background: linear-gradient(135deg, #97A0AF 0%, #6B778C 100%); }
+        .summary { background: white; border-radius: 6px; padding: 15px; margin-bottom: 15px; }
+        .summary h4 { color: #172b4d; font-size: 13px; margin-bottom: 12px; }
+        .summary-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f4f5f7; font-size: 13px; }
+        .summary-item:last-child { border-bottom: none; }
+        .summary-label { color: #6b778c; }
+        .summary-value { color: #172b4d; font-weight: 500; text-align: right; max-width: 60%; }
+        .nav-buttons { display: flex; justify-content: space-between; margin-top: 18px; padding-top: 15px; border-top: 1px solid #dfe1e6; }
+        .nav-btn { padding: 10px 18px; border-radius: 5px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; }
+        .nav-btn.back { background: white; border: 1px solid #dfe1e6; color: #6b778c; }
+        .nav-btn.back:hover { background: #f4f5f7; }
+        .nav-btn.reset { background: #0052cc; border: none; color: white; }
+        .nav-btn.reset:hover { background: #0747a6; }
+        .info-box { background: #deebff; border-left: 3px solid #0052cc; padding: 12px; border-radius: 0 5px 5px 0; margin: 15px 0; font-size: 13px; }
+        .info-box.success { background: #e3fcef; border-color: #36b37e; }
+        .info-box.warning { background: #fffae6; border-color: #ff991f; }
+        .info-box p { color: #172b4d; line-height: 1.5; }
+        .info-box strong { color: #0052cc; }
+        .description-card { background: white; border-radius: 6px; padding: 15px; margin-top: 15px; border: 1px solid #dfe1e6; }
+        .description-card h4 { color: #172b4d; font-size: 14px; margin-bottom: 10px; }
+        .description-card p { color: #5e6c84; font-size: 13px; line-height: 1.5; }
+        .description-card ul { margin: 10px 0 0 20px; color: #5e6c84; font-size: 13px; }
+        .description-card li { margin-bottom: 5px; }
+        @media (max-width: 500px) { 
+            .btn-group { flex-direction: column; } 
+            .btn { min-width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="wizard-container">
+        <div class="header">
+            <h1>RART Detection Wizard</h1>
+            <p>Answer questions to determine the correct Road Attribute Road Type (RART)</p>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress-step active" data-step="1"><div class="progress-circle">1</div><div class="progress-label">Oncoming</div></div>
+            <div class="progress-step" data-step="2"><div class="progress-circle">2</div><div class="progress-label">Lanes</div></div>
+            <div class="progress-step" data-step="3"><div class="progress-circle">3</div><div class="progress-label">LM</div></div>
+            <div class="progress-step" data-step="4"><div class="progress-circle">4</div><div class="progress-label">RE</div></div>
+            <div class="progress-step" data-step="5"><div class="progress-circle">5</div><div class="progress-label">Result</div></div>
+        </div>
+        
+        <!-- Step 1: Separation from Oncoming -->
+        <div class="card active" id="step1">
+            <h2>What is the separation from oncoming traffic?</h2>
+            <p class="subtitle">How is your lane separated from the opposing traffic direction?</p>
+            <div class="btn-group">
+                <button class="btn" onclick="selectOncoming('physical')">
+                    <span class="btn-icon">🚧</span>
+                    <span class="btn-label">Physical / No Oncoming</span>
+                    <span class="btn-detail">Physical barrier (concrete, guardrail) OR one-way road with no opposing lane</span>
+                </button>
+                <button class="btn" onclick="selectOncoming('painted')">
+                    <span class="btn-icon">➖</span>
+                    <span class="btn-label">Painted Separator</span>
+                    <span class="btn-detail">Lane markings (solid/dashed lines) separate from oncoming traffic</span>
+                </button>
+                <button class="btn" onclick="selectOncoming('none')">
+                    <span class="btn-icon">⚠️</span>
+                    <span class="btn-label">No Separation</span>
+                    <span class="btn-detail">No markings or barriers - road is shared with oncoming</span>
+                </button>
+            </div>
+            <div class="info-box">
+                <p><strong>Tip:</strong> Physical separators include concrete barriers, guardrails, medians with curbs, or grass dividers. One-way roads also count as "Physical/No oncoming".</p>
+            </div>
+        </div>
+        
+        <!-- Step 2: Number of Lanes -->
+        <div class="card" id="step2">
+            <h2>How many lanes in your direction?</h2>
+            <p class="subtitle">Count lanes going in the same direction as you</p>
+            <div class="btn-group">
+                <button class="btn" onclick="selectLanes('single')">
+                    <span class="btn-icon">1️⃣</span>
+                    <span class="btn-label">Single Lane (1)</span>
+                    <span class="btn-detail">Only one lane in your travel direction</span>
+                </button>
+                <button class="btn" onclick="selectLanes('multi')">
+                    <span class="btn-icon">🔢</span>
+                    <span class="btn-label">Multi-Lane (2+)</span>
+                    <span class="btn-detail">Two or more lanes in your travel direction</span>
+                </button>
+            </div>
+            <div class="info-box warning">
+                <p><strong>Note:</strong> A road without lane markings may be multi-lane if width exceeds <strong>5.25m</strong> and no physical separation from neighboring same-direction lane. Use street-view to validate uncertain cases.</p>
+            </div>
+            <div class="nav-buttons"><button class="nav-btn back" onclick="goToStep(1)">← Back</button></div>
+        </div>
+        
+        <!-- Step 3: Lane Marks from Same Direction Neighbor (for multi-lane) -->
+        <div class="card" id="step3">
+            <h2>Are there painted lane marks between same-direction lanes?</h2>
+            <p class="subtitle">Check for lane markings separating you from the next lane going in your direction</p>
+            <div class="btn-group">
+                <button class="btn" onclick="selectLaneMarks('painted')">
+                    <span class="btn-icon">🎨</span>
+                    <span class="btn-label">Yes - Painted Lane Marks</span>
+                    <span class="btn-detail">Visible lane markings (solid or dashed) between lanes</span>
+                </button>
+                <button class="btn" onclick="selectLaneMarks('none')">
+                    <span class="btn-icon">❌</span>
+                    <span class="btn-label">No Lane Marks</span>
+                    <span class="btn-detail">No markings between same-direction lanes</span>
+                </button>
+            </div>
+            <div class="info-box">
+                <p><strong>Remember:</strong> Solid lane marks between same-direction lanes still count as "painted" - they don't indicate single lane!</p>
+            </div>
+            <div class="nav-buttons"><button class="nav-btn back" onclick="goBack()">← Back</button></div>
+        </div>
+        
+        <!-- Step 4: Road Edge Separation -->
+        <div class="card" id="step4">
+            <h2>Is there road edge (RE) separation?</h2>
+            <p class="subtitle">Check for physical or painted road edges/borders on the sides</p>
+            <div class="btn-group">
+                <button class="btn" onclick="selectRoadEdge('yes')">
+                    <span class="btn-icon">✅</span>
+                    <span class="btn-label">Yes - Has Road Edge</span>
+                    <span class="btn-detail">Physical barriers (curbs, walls) OR painted edge lines on sides</span>
+                </button>
+                <button class="btn" onclick="selectRoadEdge('no')">
+                    <span class="btn-icon">❌</span>
+                    <span class="btn-label">No Road Edge</span>
+                    <span class="btn-detail">No separation from road edges - road blends into surroundings</span>
+                </button>
+            </div>
+            <div class="nav-buttons"><button class="nav-btn back" onclick="goBack()">← Back</button></div>
+        </div>
+        
+        <!-- Step 5: Junction/Length Check (for RART 0 vs 1) -->
+        <div class="card" id="step5">
+            <h2>Junction and length check</h2>
+            <p class="subtitle">Check for junctions and road segment length</p>
+            <div class="btn-group">
+                <button class="btn" onclick="selectJunction('rart0')">
+                    <span class="btn-icon">🛣️</span>
+                    <span class="btn-label">Soft Merges Only + 3km+</span>
+                    <span class="btn-detail">Only soft merges/splits (no regular junctions) AND segment is at least 3km long</span>
+                </button>
+                <button class="btn" onclick="selectJunction('rart1')">
+                    <span class="btn-icon">🚦</span>
+                    <span class="btn-label">Has Junctions OR < 3km</span>
+                    <span class="btn-detail">Has regular junctions, OR segment is less than 3km between junctions</span>
+                </button>
+            </div>
+            <div class="info-box warning">
+                <p><strong>RART 1 tagging:</strong> When RART 0 is less than 3km between junctions, tag RART 1. Take 200m back before junction and 50m ahead after junction for RART 1.</p>
+            </div>
+            <div class="nav-buttons"><button class="nav-btn back" onclick="goBack()">← Back</button></div>
+        </div>
+        
+        <!-- Step 6: Result -->
+        <div class="card" id="step6">
+            <div class="result-card" id="resultCard">
+                <h3>Detected RART</h3>
+                <div class="result-rart" id="resultRart">0</div>
+                <div class="result-name" id="resultName">Separated multi-lane road</div>
+            </div>
+            <div class="summary">
+                <h4>Decision Path</h4>
+                <div class="summary-item"><span class="summary-label">Oncoming Separation</span><span class="summary-value" id="summaryOncoming">-</span></div>
+                <div class="summary-item"><span class="summary-label">Number of Lanes</span><span class="summary-value" id="summaryLanes">-</span></div>
+                <div class="summary-item" id="rowLaneMarks" style="display:none;"><span class="summary-label">Lane Marks (LM)</span><span class="summary-value" id="summaryLaneMarks">-</span></div>
+                <div class="summary-item" id="rowRoadEdge" style="display:none;"><span class="summary-label">Road Edge (RE)</span><span class="summary-value" id="summaryRoadEdge">-</span></div>
+                <div class="summary-item" id="rowJunction" style="display:none;"><span class="summary-label">Junction/Length</span><span class="summary-value" id="summaryJunction">-</span></div>
+            </div>
+            <div class="description-card" id="descriptionCard">
+                <h4>RART Description</h4>
+                <p id="rartDescription"></p>
+            </div>
+            <div class="nav-buttons">
+                <button class="nav-btn back" onclick="goBack()">← Back</button>
+                <button class="nav-btn reset" onclick="resetWizard()">Start Over</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // RART Definitions based on V.3 Chart
+        const rartDefinitions = {
+            0: {
+                name: "Separated multi-lane road",
+                description: "Physically separated from oncoming (or no oncoming lane), 2+ lanes with painted lane marks between same-direction lanes, physical/painted road edges, ONLY soft merges and splits (no regular junctions), minimum 3km length.",
+                attributes: { oncoming: "Physical/No oncoming", lanes: "2+", lm: "Painted", re: "Physical/Painted", junction: "Soft merges only", minLength: "3km" }
+            },
+            1: {
+                name: "Separated well painted road (multi-lane)",
+                description: "Physically separated from oncoming (or no oncoming lane), 2+ lanes with painted lane marks between same-direction lanes, physical/painted road edges, has regular junctions. When RART 0 is less than 3km between junctions, use RART 1. Tag 200m before junction and 50m after.",
+                attributes: { oncoming: "Physical/No oncoming", lanes: "2+", lm: "Painted", re: "Physical/Painted", junction: "Yes" }
+            },
+            2: {
+                name: "Separated single lane",
+                description: "Physically separated from oncoming (or no oncoming lane), single lane only.",
+                attributes: { oncoming: "Physical/No oncoming", lanes: "1" }
+            },
+            3: {
+                name: "Non-physically separated well painted road (multi-lane)",
+                description: "Painted separator from oncoming traffic, 2+ lanes with painted lane marks between same-direction lanes, physical/painted road edges, has regular junctions.",
+                attributes: { oncoming: "Painted", lanes: "2+", lm: "Painted", re: "Physical/Painted", junction: "Yes" }
+            },
+            4: {
+                name: "Non-physically separated single lane (with RE)",
+                description: "Painted separator from oncoming traffic, single lane, has physical/painted road edges.",
+                attributes: { oncoming: "Painted", lanes: "1", re: "Physical/Painted" }
+            },
+            5: {
+                name: "Non-physically separated without RE (multi-lane)",
+                description: "Painted separator from oncoming traffic, 2+ lanes with painted lane marks between same-direction lanes, NO road edges, has regular junctions.",
+                attributes: { oncoming: "Painted", lanes: "2+", lm: "Painted", re: "No RE", junction: "Yes" }
+            },
+            6: {
+                name: "Non-physically separated single-lane (without RE)",
+                description: "Painted separator from oncoming traffic, single lane, NO road edges.",
+                attributes: { oncoming: "Painted", lanes: "1", re: "No RE" }
+            },
+            7: {
+                name: "Separated multi-lane non-painted LM with RE",
+                description: "Physically separated from oncoming (or no oncoming lane), 2+ lanes WITHOUT painted lane marks between same-direction lanes, HAS physical/painted road edges.",
+                attributes: { oncoming: "Physical/No oncoming", lanes: "2+", lm: "No", re: "Physical/Painted", junction: "Yes" }
+            },
+            8: {
+                name: "Separated multi-lane non-painted LM without RE",
+                description: "Physically separated from oncoming (or no oncoming lane), 2+ lanes WITHOUT painted lane marks between same-direction lanes, NO road edges.",
+                attributes: { oncoming: "Physical/No oncoming", lanes: "2+", lm: "No", re: "No RE" }
+            },
+            9: {
+                name: "Non-physically separated non-painted LM with RE",
+                description: "Painted separator from oncoming traffic, 2+ lanes WITHOUT painted lane marks between same-direction lanes, HAS physical/painted road edges.",
+                attributes: { oncoming: "Painted", lanes: "2+", lm: "No", re: "Physical/Painted" }
+            },
+            10: {
+                name: "Non-physically separated non-painted LM without RE",
+                description: "Painted separator from oncoming traffic, 2+ lanes WITHOUT painted lane marks between same-direction lanes, NO road edges, has regular junctions.",
+                attributes: { oncoming: "Painted", lanes: "2+", lm: "No", re: "No RE", junction: "Yes" }
+            },
+            11: {
+                name: "Not separated - with RE",
+                description: "NO separation from oncoming traffic, HAS physical/painted road edges (lane marks next to road edge).",
+                attributes: { oncoming: "No separation", re: "Physical/Painted" }
+            },
+            12: {
+                name: "Not separated - No LM no RE",
+                description: "NO separation from oncoming traffic, NO road edges. Completely unseparated road.",
+                attributes: { oncoming: "No separation", re: "No RE" }
+            },
+            15: {
+                name: "Unknown",
+                description: "RART 15 is the placeholder for 'unknown' when the road type cannot be determined.",
+                attributes: {}
+            }
+        };
+
+        // State management
+        let state = {
+            step: 1,
+            history: [],
+            oncoming: null,      // 'physical', 'painted', 'none'
+            lanes: null,         // 'single', 'multi'
+            laneMarks: null,     // 'painted', 'none'
+            roadEdge: null,      // 'yes', 'no'
+            junction: null,      // 'rart0', 'rart1'
+            rart: null
+        };
+
+        function goToStep(step) {
+            document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+            document.getElementById(`step${step}`).classList.add('active');
+            state.step = step;
+            updateProgressBar(step);
+        }
+
+        function updateProgressBar(currentStep) {
+            document.querySelectorAll('.progress-step').forEach((step, i) => {
+                step.classList.remove('active', 'completed');
+                if (i + 1 < currentStep) step.classList.add('completed');
+                else if (i + 1 === currentStep) step.classList.add('active');
+            });
+        }
+
+        function goBack() {
+            if (state.history.length > 0) {
+                const prevStep = state.history.pop();
+                goToStep(prevStep);
+            }
+        }
+
+        // Step 1: Oncoming separation
+        function selectOncoming(type) {
+            state.oncoming = type;
+            state.history.push(1);
+            
+            if (type === 'none') {
+                // No separation from oncoming -> go directly to Road Edge (RE) check
+                goToStep(4);
+            } else {
+                // Physical or Painted -> ask about lanes
+                goToStep(2);
+            }
+        }
+
+        // Step 2: Number of lanes
+        function selectLanes(count) {
+            state.lanes = count;
+            state.history.push(2);
+            
+            if (state.oncoming === 'physical') {
+                // Physically separated
+                if (count === 'single') {
+                    // Single lane, physically separated = RART 2
+                    showResult(2);
+                } else {
+                    // Multi-lane, physically separated -> ask about lane marks
+                    goToStep(3);
+                }
+            } else if (state.oncoming === 'painted') {
+                // Painted separator
+                if (count === 'single') {
+                    // Single lane with painted separator -> ask about road edge
+                    goToStep(4);
+                } else {
+                    // Multi-lane with painted separator -> ask about lane marks
+                    goToStep(3);
+                }
+            }
+        }
+
+        // Step 3: Lane marks from same direction neighbor
+        function selectLaneMarks(marks) {
+            state.laneMarks = marks;
+            state.history.push(3);
+            
+            // Go to road edge check
+            goToStep(4);
+        }
+
+        // Step 4: Road edge separation
+        function selectRoadEdge(hasRE) {
+            state.roadEdge = hasRE;
+            state.history.push(4);
+            
+            // Determine RART based on all selections
+            determineRart();
+        }
+
+        // Step 5: Junction check (only for potential RART 0/1)
+        function selectJunction(type) {
+            state.junction = type;
+            state.history.push(5);
+            
+            if (type === 'rart0') {
+                showResult(0);
+            } else {
+                showResult(1);
+            }
+        }
+
+        // Determine RART based on current state
+        function determineRart() {
+            const { oncoming, lanes, laneMarks, roadEdge } = state;
+            
+            // No separation from oncoming
+            if (oncoming === 'none') {
+                if (roadEdge === 'yes') {
+                    showResult(11);
+                } else {
+                    showResult(12);
+                }
+                return;
+            }
+            
+            // Physically separated (or no oncoming lane)
+            if (oncoming === 'physical') {
+                if (lanes === 'single') {
+                    showResult(2);
+                    return;
+                }
+                
+                // Multi-lane, physically separated
+                if (laneMarks === 'painted') {
+                    if (roadEdge === 'yes') {
+                        // Could be RART 0 or 1 - need junction check
+                        goToStep(5);
+                        return;
+                    } else {
+                        // This case isn't explicitly in chart - default to RART 1 without RE check
+                        showResult(1);
+                        return;
+                    }
+                } else {
+                    // No lane marks
+                    if (roadEdge === 'yes') {
+                        showResult(7);
+                    } else {
+                        showResult(8);
+                    }
+                }
+                return;
+            }
+            
+            // Painted separator
+            if (oncoming === 'painted') {
+                if (lanes === 'single') {
+                    if (roadEdge === 'yes') {
+                        showResult(4);
+                    } else {
+                        showResult(6);
+                    }
+                    return;
+                }
+                
+                // Multi-lane, painted separator
+                if (laneMarks === 'painted') {
+                    if (roadEdge === 'yes') {
+                        showResult(3);
+                    } else {
+                        showResult(5);
+                    }
+                } else {
+                    // No lane marks between same-direction lanes
+                    if (roadEdge === 'yes') {
+                        showResult(9);
+                    } else {
+                        showResult(10);
+                    }
+                }
+            }
+        }
+
+        // Show final result
+        function showResult(rartNum) {
+            state.rart = rartNum;
+            const def = rartDefinitions[rartNum];
+            
+            // Update result card
+            document.getElementById('resultRart').textContent = rartNum;
+            document.getElementById('resultName').textContent = def.name;
+            document.getElementById('rartDescription').textContent = def.description;
+            
+            // Update result card color
+            const resultCard = document.getElementById('resultCard');
+            resultCard.className = 'result-card rart-' + rartNum;
+            
+            // Update summary
+            const oncomingLabels = {
+                'physical': 'Physical / No oncoming lane',
+                'painted': 'Painted separator',
+                'none': 'No separation'
+            };
+            const lanesLabels = {
+                'single': 'Single (1)',
+                'multi': 'Multi-lane (2+)'
+            };
+            
+            document.getElementById('summaryOncoming').textContent = oncomingLabels[state.oncoming] || '-';
+            document.getElementById('summaryLanes').textContent = state.lanes ? lanesLabels[state.lanes] : 'N/A';
+            
+            // Show/hide optional rows
+            const rowLM = document.getElementById('rowLaneMarks');
+            const rowRE = document.getElementById('rowRoadEdge');
+            const rowJunc = document.getElementById('rowJunction');
+            
+            if (state.laneMarks !== null) {
+                rowLM.style.display = 'flex';
+                document.getElementById('summaryLaneMarks').textContent = state.laneMarks === 'painted' ? 'Yes - Painted' : 'No lane marks';
+            } else {
+                rowLM.style.display = 'none';
+            }
+            
+            if (state.roadEdge !== null) {
+                rowRE.style.display = 'flex';
+                document.getElementById('summaryRoadEdge').textContent = state.roadEdge === 'yes' ? 'Yes - Physical/Painted' : 'No RE';
+            } else {
+                rowRE.style.display = 'none';
+            }
+            
+            if (state.junction !== null) {
+                rowJunc.style.display = 'flex';
+                document.getElementById('summaryJunction').textContent = state.junction === 'rart0' ? 'Soft merges only, ≥3km' : 'Has junctions OR <3km';
+            } else {
+                rowJunc.style.display = 'none';
+            }
+            
+            goToStep(6);
+            updateProgressBar(5);
+        }
+
+        function resetWizard() {
+            state = {
+                step: 1,
+                history: [],
+                oncoming: null,
+                lanes: null,
+                laneMarks: null,
+                roadEdge: null,
+                junction: null,
+                rart: null
+            };
+            document.querySelectorAll('.btn').forEach(btn => btn.classList.remove('selected'));
+            goToStep(1);
+        }
+    </script>
+</body>
+</html>
