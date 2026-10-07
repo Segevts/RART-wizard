@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RART Detection Wizard Pro</title>
+    <style>
+        :root {
+            --me: #1f2eb8;
+            --me-dark: #17238f;
+            --ink: #16182b;
+            --muted: #5c657d;
+            --line: #e3e7f3;
+            --ice: #f3f5fd;
+            --bg: #f3f5fb;
+            --card: #ffffff;
+            --warn: #8a5a10;
+            --warn-bg: #fff8eb;
+            --warn-line: #f0ddb4;
+        }
+        * { box-sizing: border-box; }
+        html, body { height: 100%; }
+        body {
+            margin: 0;
+            color: var(--ink);
+            background:
+                radial-gradient(900px 280px at 100% -40px, rgba(31, 46, 184, 0.08), transparent 55%),
+                radial-gradient(700px 240px at -10% -20px, rgba(31, 46, 184, 0.06), transparent 50%),
+                var(--bg);
+            font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+            color-scheme: light;
+        }
+        button, input { font-family: inherit; }
+        .app { height: 100%; display: flex; flex-direction: column; min-height: 0; min-width: 0; max-width: 100%; }
+        .brandbar { height: 4px; background: var(--me); flex: none; }
+        header {
+            flex: none;
+            background: #fff;
+            border-bottom: 1px solid var(--line);
+        }
+        .wrap { width: min(980px, calc(100% - 28px)); margin: 0 auto; }
+        .header-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 0 8px;
+            min-width: 0;
+            width: 100%;
+            flex-wrap: wrap;
+        }
+        .logo { height: 22px; width: auto; display: block; flex: none; }
+        .titles { min-width: 0; }
+        .product {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+        .badge {
+            font-size: 10px;
+            letter-spacing: 0.12em;
+            font-weight: 700;
+            color: #fff;
+            background: var(--me);
+            border-radius: 999px;
+            padding: 3px 7px;
+        }
+        .tagline { margin-top: 2px; font-size: 12px; color: var(--muted); }
+        .chart-btn { margin-left: auto; }
+        .rail { display: flex; padding: 2px 18px 10px; }
+        .rail-step { flex: 1; text-align: center; position: relative; min-width: 0; }
+        .rail-step::before {
+            content: "";
+            position: absolute;
+            top: 6px;
+            left: -50%;
+            width: 100%;
+            height: 2px;
+            background: #d5dbed;
+        }
+        .rail-step:first-child::before { display: none; }
+        .dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            margin: 0 auto 4px;
+            background: #fff;
+            border: 2px solid #c5cce2;
+            position: relative;
+            z-index: 1;
+        }
+        .rail-label {
+            display: block;
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--muted);
+            line-height: 1.15;
+        }
+        .rail-step.done .dot { background: var(--me); border-color: var(--me); }
+        .rail-step.done::before, .rail-step.current::before { background: var(--me); }
+        .rail-step.current .dot { border-color: var(--me); box-shadow: 0 0 0 4px rgba(31, 46, 184, 0.14); }
+        .rail-step.current .rail-label { color: var(--me); }
+        .rail-step.skipped .dot { border-style: dashed; background: var(--ice); }
+        .rail-step.skipped .rail-label { color: #a3abc0; }
+        main { flex: 1; min-height: 0; overflow: auto; padding: 16px 0 18px; }
+        .panel {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            box-shadow: 0 10px 28px rgba(22, 28, 70, 0.05);
+            padding: 20px 20px 14px;
+        }
+        .crumbs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+        .crumb {
+            background: var(--ice);
+            color: #343b55;
+            border-radius: 999px;
+            padding: 4px 9px;
+            font-size: 11px;
+        }
+        .crumb b { color: var(--me); font-weight: 700; }
+        .kicker {
+            color: var(--me);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+        h1 {
+            margin: 6px 0 4px;
+            font-size: 22px;
+            line-height: 1.25;
+            letter-spacing: -0.02em;
+            font-weight: 700;
+        }
+        .sub { margin: 0 0 16px; color: var(--muted); font-size: 14px; line-height: 1.4; }
+        .options { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 10px; }
+        .choice {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            width: 100%;
+            text-align: left;
+            background: #fff;
+            border: 1px solid #e1e6f2;
+            border-radius: 10px;
+            padding: 13px 12px;
+            cursor: pointer;
+            color: inherit;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+        .choice:hover { border-color: var(--me); box-shadow: 0 8px 18px rgba(31, 46, 184, 0.08); }
+        .choice:focus-visible, .btn:focus-visible { outline: 2px solid var(--me); outline-offset: 2px; }
+        .ico {
+            width: 36px;
+            height: 36px;
+            flex: none;
+            border-radius: 8px;
+            background: var(--ice);
+            display: grid;
+            place-items: center;
+        }
+        .ico svg { width: 20px; height: 20px; display: block; }
+        .choice-label { display: block; font-size: 14px; font-weight: 700; }
+        .choice-detail { display: block; margin-top: 3px; color: var(--muted); font-size: 12.5px; line-height: 1.35; }
+        .go { margin-left: auto; margin-top: 8px; color: var(--me); font-size: 18px; line-height: 1; opacity: 0.45; flex: none; }
+        .choice:hover .go { opacity: 1; }
+        .note {
+            margin-top: 14px;
+            background: var(--ice);
+            border: 1px solid #dde3f6;
+            border-left: 3px solid var(--me);
+            border-radius: 8px;
+            padding: 10px 12px;
+            font-size: 13px;
+            line-height: 1.45;
+        }
+        .note strong {
+            display: block;
+            margin-bottom: 2px;
+            font-size: 11px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--me);
+        }
+        .note.warn { background: var(--warn-bg); border-color: var(--warn-line); border-left-color: #c4841d; }
+        .note.warn strong { color: var(--warn); }
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            margin-top: 16px;
+            padding-top: 12px;
+            border-top: 1px solid #eef1f7;
+        }
+        .actions-right { display: flex; gap: 8px; margin-left: auto; }
+        .btn {
+            border-radius: 8px;
+            padding: 9px 14px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .btn.ghost { background: #fff; border: 1px solid #d5dced; color: #343b55; }
+        .btn.ghost:hover { background: var(--ice); }
+        .btn.primary { background: var(--me); border: 1px solid var(--me); color: #fff; }
+        .btn.primary:hover { background: var(--me-dark); }
+        .hero {
+            position: relative;
+            overflow: hidden;
+            background: var(--me);
+            color: #fff;
+            border-radius: 12px;
+            padding: 18px 20px 16px;
+        }
+        .hero::after {
+            content: "";
+            position: absolute;
+            right: -46px;
+            top: -58px;
+            width: 170px;
+            height: 170px;
+            border: 16px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+        .hero::before {
+            content: "";
+            position: absolute;
+            right: 18px;
+            top: 28px;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.14);
+        }
+        .hero-kicker { position: relative; font-size: 11px; letter-spacing: 0.14em; font-weight: 700; opacity: 0.8; }
+        .hero-num {
+            position: relative;
+            margin-top: 4px;
+            font-size: 68px;
+            line-height: 0.9;
+            font-weight: 700;
+            letter-spacing: -0.045em;
+            font-variant-numeric: tabular-nums;
+        }
+        .hero-name { position: relative; margin-top: 8px; font-size: 16px; font-weight: 600; max-width: 34rem; }
+        .spec { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 140px), 1fr)); gap: 8px; margin-top: 12px; }
+        .spec div { background: var(--ice); border-radius: 8px; padding: 8px 10px; }
+        .spec span {
+            display: block;
+            font-size: 10px;
+            letter-spacing: 0.07em;
+            text-transform: uppercase;
+            color: var(--muted);
+            font-weight: 700;
+        }
+        .spec strong { display: block; margin-top: 3px; font-size: 13px; font-weight: 600; }
+        .desc { margin: 12px 0 0; font-size: 13.5px; line-height: 1.5; color: #2c3348; }
+        .answers { list-style: none; margin: 12px 0 0; padding: 0; }
+        .answers li {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 8px 0;
+            border-bottom: 1px solid #eef1f7;
+            font-size: 13px;
+        }
+        .answers span { color: var(--muted); }
+        .answers b { font-weight: 600; text-align: right; }
+        .section-label {
+            margin: 14px 0 0;
+            font-size: 11px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--muted);
+            font-weight: 700;
+        }
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(14, 18, 48, 0.48);
+            z-index: 30;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 22px 14px;
+        }
+        .overlay[hidden] { display: none; }
+        .dialog {
+            width: min(940px, 100%);
+            max-height: calc(100% - 10px);
+            overflow: auto;
+            background: #fff;
+            border-radius: 12px;
+            padding: 14px 14px 10px;
+            box-shadow: 0 18px 50px rgba(10, 16, 40, 0.25);
+        }
+        .dialog-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+        .dialog h2 { margin: 0; font-size: 16px; }
+        .table-wrap { overflow: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        th { text-align: left; background: var(--me); color: #fff; padding: 8px; font-weight: 600; white-space: nowrap; }
+        td { padding: 7px 8px; border-bottom: 1px solid #eef1f7; vertical-align: top; }
+        tr:nth-child(even) td { background: #f7f8fd; }
+        td.num { font-weight: 700; color: var(--me); }
+        @media (max-width: 640px) {
+            h1 { font-size: 18px; }
+            .tagline { display: none; }
+            .hero-num { font-size: 56px; }
+            .logo { height: 18px; }
+            .product { font-size: 14px; }
+            .wrap { width: min(980px, calc(100% - 16px)); }
+            .header-row { flex-wrap: wrap; row-gap: 6px; }
+            .rail { padding-inline: 2px; }
+            .rail-label { font-size: 9px; }
+            .chart-btn { padding: 7px 10px; }
+            .panel { padding: 16px 14px 12px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <div class="brandbar"></div>
+        <header>
+            <div class="wrap">
+                <div class="header-row">
+                    <svg class="logo" viewBox="0 0 160 31.48" role="img" aria-label="Mobileye"><path fill="#1f2eb8" d="M26.65,4.46s-.04,0-.06,0H15.59l-7.78,7.59h3.28c1.95,.01,2.97,1.31,2.97,3.35v11.73h7.81V12.05s3.24,0,3.24,0h.04c1.95,.01,2.97,1.31,2.97,3.35v11.73h7.81V13.43c0-5.48-3.08-8.97-9.28-8.97"/><polygon fill="#1f2eb8" points="0 19.66 0 27.12 7.81 27.12 7.81 12.05 0 19.66"/><rect fill="#1f2eb8" x="0" y="4.46" width="7.81" height="7.59"/><g><path fill="#1f2eb8" d="M46.69,12.04c.93-1.19,2.21-1.93,3.93-1.93,2.01,0,3.45,.88,4.27,2.26,.96-1.38,2.52-2.26,4.58-2.26,3.42,0,5.26,2.48,5.26,5.46v8.19h-2.32V15.71c0-2.12-1.1-3.58-3.28-3.58s-3.42,1.63-3.42,3.72v7.91h-2.29V15.71c0-2.12-1.1-3.58-3.28-3.58s-3.42,1.63-3.42,3.72v7.91h-2.29V10.44h2.26v1.6Z"/><path fill="#1f2eb8" d="M78.94,17.11c0-2.81-2.06-5.07-4.78-5.07s-4.75,2.21-4.75,5.1,2.06,5.07,4.78,5.07,4.75-2.21,4.75-5.1m-11.88,.03c0-3.97,3.08-7.06,7.15-7.06s7.07,3.06,7.07,7.03-3.08,7.06-7.15,7.06-7.07-3.06-7.07-7.03"/><path fill="#1f2eb8" d="M90.76,22.11c2.69,0,4.72-1.87,4.72-4.99s-2.01-4.99-4.64-4.99-4.86,2.12-4.86,5.05,2.15,4.94,4.78,4.94m-6.98-17.65h2.29V12.51c1.19-1.46,3-2.37,5-2.37,3.65,0,6.76,2.67,6.76,6.92s-3.25,7-6.87,7c-1.92,0-3.73-.85-4.92-2.29v1.99h-2.26V4.46Z"/></g><path fill="#1f2eb8" d="M102.71,23.76h-2.32V10.44h2.32v13.32Zm.11-15.33h-2.54v-2.45h2.54v2.45Z"/><rect fill="#1f2eb8" x="106.08" y="4.46" width="2.32" height="19.3"/><path fill="#1f2eb8" d="M113.38,16.18h8.99c-.34-2.59-2.06-4.16-4.38-4.16s-4.21,1.52-4.61,4.16m9.44,3.81l1.39,1.24c-1.53,1.93-3.56,2.95-6.19,2.95-4.07,0-7.01-2.9-7.01-7.03s3.05-7.03,6.96-7.03,6.73,2.7,6.73,6.87c0,.36-.06,.8-.08,.94h-11.22c.31,2.7,2.37,4.36,4.83,4.36,1.72,0,3.28-.69,4.61-2.29"/><polygon fill="#1f2eb8" points="136.53 10.44 132.12 21.03 127.7 10.44 125.19 10.44 130.96 23.65 128.61 28.72 130.98 28.72 138.93 10.44 136.53 10.44"/><path fill="#1f2eb8" d="M141.77,16.18h8.99c-.34-2.59-2.06-4.16-4.38-4.16s-4.21,1.52-4.61,4.16m9.44,3.81l1.39,1.24c-1.53,1.93-3.56,2.95-6.19,2.95-4.07,0-7.01-2.9-7.01-7.03s3.05-7.03,6.96-7.03,6.73,2.7,6.73,6.87c0,.36-.06,.8-.08,.94h-11.22c.31,2.7,2.37,4.36,4.83,4.36,1.72,0,3.28-.69,4.61-2.29"/><path fill="#1f2eb8" d="M160,12.64h-.43v-2.06l-.74,1.38h-.37l-.74-1.4v2.08h-.43v-2.49h.66l.71,1.32,.69-1.32h.66v2.49Zm-5.28-2.49h2.25v.41h-.92v2.08h-.43v-2.08h-.91v-.41Z"/></svg>
+                    <div class="titles">
+                        <div class="product">RART Detection <span class="badge">PRO</span></div>
+                        <div class="tagline">Road Attribute Road Type · chart V.3</div>
+                    </div>
+                    <button class="btn ghost chart-btn" type="button" id="openChart">V.3 chart</button>
+                </div>
+                <div class="rail" id="rail"></div>
+            </div>
+        </header>
+        <main>
+            <div class="wrap">
+                <div class="panel" id="stage" aria-live="polite"></div>
+            </div>
+        </main>
+    </div>
+    <div class="overlay" id="overlay" hidden>
+        <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="chartTitle">
+            <div class="dialog-head">
+                <h2 id="chartTitle">RART V.3 quick reference</h2>
+                <button class="btn ghost" type="button" id="closeChart">Close</button>
+            </div>
+            <div class="table-wrap" id="chartTable"></div>
+        </div>
+    </div>
+    <script>
+        /* ============================================================
+           EDIT THIS FILE TO CHANGE THE WIZARD
+           1. COPY  — question text, option labels, tips
+           2. RART  — result name, description, chart profile
+           3. resolve() — decision tree. Keep outcomes aligned with V.3.
+           Deploy: commit this file on main.
+           GitHub Pages: https://segevts.github.io/RART-wizard/rart-wizard-pro.html
+           Restore an older wizard: git history of this file.
+           ============================================================ */
+
+        const RAIL = [
+            { id: "oncoming", label: "Oncoming" },
+            { id: "lanes", label: "Lanes" },
+            { id: "marks", label: "Marks" },
+            { id: "edge", label: "Edge" },
+            { id: "split", label: "Split" },
+            { id: "result", label: "Result" }
+        ];
+
+        const ANSWERS = {
+            oncoming: { physical: "Physical / no oncoming", painted: "Painted separator", none: "No separation" },
+            lanes: { single: "Single lane (1)", multi: "Multi-lane (2+)" },
+            marks: { painted: "Painted", none: "No lane marks" },
+            edge: { yes: "Physical / painted", no: "No road edge" },
+            split: { long: "Soft merges only, 3 km+", short: "Junctions, or under 3 km" }
+        };
+
+        const COPY = {
+            oncoming: {
+                kicker: "Oncoming traffic",
+                title: "What separates you from oncoming traffic?",
+                subtitle: "Use the boundary between your direction and the opposing direction.",
+                note: { kind: "info", title: "Tip", text: "Physical separators include concrete barriers, guardrails, medians with curbs, or grass dividers. A one-way road with no opposing lane counts as physical / no oncoming." },
+                options: [
+                    { id: "physical", icon: "physical", label: "Physical / no oncoming", detail: "Barrier, guardrail, curb median, grass divider, or a one-way road." },
+                    { id: "painted", icon: "painted", label: "Painted separator", detail: "Solid or dashed markings separate you from oncoming traffic." },
+                    { id: "none", icon: "none", label: "No separation", detail: "No markings and no barrier. The road is shared with oncoming traffic." }
+                ]
+            },
+            lanes: {
+                kicker: "Same direction",
+                title: "How many lanes are in your direction?",
+                subtitle: "Count lanes traveling the same way you are.",
+                note: { kind: "warn", title: "Note", text: "A road without lane markings can still be multi-lane when the width is over 5.25 m and there is no physical separation from the neighboring same-direction lane. Use street view when the width is uncertain." },
+                options: [
+                    { id: "single", icon: "single", label: "Single lane (1)", detail: "Only one lane in your travel direction." },
+                    { id: "multi", icon: "multi", label: "Multi-lane (2+)", detail: "Two or more lanes in your travel direction." }
+                ]
+            },
+            marks: {
+                kicker: "Lane marks",
+                title: "Are there painted marks between same-direction lanes?",
+                subtitle: "Check the lines between you and the next lane going your way.",
+                note: { kind: "info", title: "Remember", text: "Solid lane marks between same-direction lanes still count as painted. They do not turn the road into a single lane." },
+                options: [
+                    { id: "painted", icon: "marks", label: "Painted lane marks", detail: "Solid or dashed markings between same-direction lanes." },
+                    { id: "none", icon: "nomarks", label: "No lane marks", detail: "Nothing painted between the same-direction lanes." }
+                ]
+            },
+            edge: {
+                kicker: "Road edge",
+                title: "Is there a road edge?",
+                subtitle: "Check the side border of the road, not the oncoming separator.",
+                note: null,
+                options: [
+                    { id: "yes", icon: "edge", label: "Has a road edge", detail: "Physical border (curb, wall) or a painted edge line." },
+                    { id: "no", icon: "noedge", label: "No road edge", detail: "The road has no physical or painted edge." }
+                ]
+            },
+            split: {
+                kicker: "RART 0 or 1",
+                title: "Junctions and segment length",
+                subtitle: "This split decides separated, well-painted, multi-lane roads with a road edge.",
+                note: { kind: "warn", title: "Tagging", text: "When a RART 0 stretch is under 3 km between junctions, tag RART 1. Take 200 m before the junction and 50 m after it." },
+                options: [
+                    { id: "long", icon: "long", label: "Soft merges only, and 3 km+", detail: "Only soft merges or splits, and the segment is at least 3 km." },
+                    { id: "short", icon: "short", label: "Junctions, or under 3 km", detail: "Regular junctions, or less than 3 km between junctions." }
+                ]
+            }
+        };
+
+        const RART = {
+            0: {
+                name: "Separated multi-lane road",
+                description: "Physically separated from oncoming (or no oncoming lane), 2+ lanes with painted lane marks between same-direction lanes, physical/painted road edges, only soft merges and splits (no regular junctions), minimum 3 km length.",
+                profile: { "Oncoming sep.": "Physical/No oncoming", "Lanes": "2+", "Lane marks": "Painted", "Road edge": "Physical/Painted" }
+            },
+            1: {
+                name: "Separated well painted road (multi-lane)",
+                description: "Physically separated from oncoming (or no oncoming lane), 2+ lanes with painted lane marks between same-direction lanes, physical/painted road edges, and regular junctions. When RART 0 is under 3 km between junctions, use RART 1. Tag 200 m before the junction and 50 m after.",
+                profile: { "Oncoming sep.": "Physical/No oncoming", "Lanes": "2+", "Lane marks": "Painted", "Road edge": "Physical/Painted" }
+            },
+            2: {
+                name: "Separated single lane",
+                description: "Physically separated from oncoming (or no oncoming lane), single lane only.",
+                profile: { "Oncoming sep.": "Physical/No oncoming", "Lanes": "1", "Lane marks": "—", "Road edge": "—" }
+            },
+            3: {
+                name: "Non-physically separated well painted road",
+                description: "Painted separator from oncoming traffic, 2+ lanes with painted lane marks between same-direction lanes, and physical/painted road edges.",
+                profile: { "Oncoming sep.": "Painted", "Lanes": "2+", "Lane marks": "Painted", "Road edge": "Physical/Painted" }
+            },
+            4: {
+                name: "Non-physically separated single lane (with RE)",
+                description: "Painted separator from oncoming traffic, single lane, with physical/painted road edges.",
+                profile: { "Oncoming sep.": "Painted", "Lanes": "1", "Lane marks": "—", "Road edge": "Physical/Painted" }
+            },
+            5: {
+                name: "Non-physically separated without RE (multi-lane)",
+                description: "Painted separator from oncoming traffic, 2+ lanes with painted lane marks between same-direction lanes, and no road edge.",
+                profile: { "Oncoming sep.": "Painted", "Lanes": "2+", "Lane marks": "Painted", "Road edge": "No RE" }
+            },
+            6: {
+                name: "Non-physically separated single-lane (without RE)",
+                description: "Painted separator from oncoming traffic, single lane, and no road edge.",
+                profile: { "Oncoming sep.": "Painted", "Lanes": "1", "Lane marks": "—", "Road edge": "No RE" }
+            },
+            7: {
+                name: "Separated multi-lane non-painted LM with RE",
+                description: "Physically separated from oncoming (or no oncoming lane), 2+ lanes without painted lane marks between same-direction lanes, with physical/painted road edges.",
+                profile: { "Oncoming sep.": "Physical/No oncoming", "Lanes": "2+", "Lane marks": "No", "Road edge": "Physical/Painted" }
+            },
+            8: {
+                name: "Separated multi-lane non-painted LM without RE",
+                description: "Physically separated from oncoming (or no oncoming lane), 2+ lanes without painted lane marks between same-direction lanes, and no road edge.",
+                profile: { "Oncoming sep.": "Physical/No oncoming", "Lanes": "2+", "Lane marks": "No", "Road edge": "No RE" }
+            },
+            9: {
+                name: "Non-physically separated non-painted LM with RE",
+                description: "Painted separator from oncoming traffic, 2+ lanes without painted lane marks between same-direction lanes, with physical/painted road edges.",
+                profile: { "Oncoming sep.": "Painted", "Lanes": "2+", "Lane marks": "No", "Road edge": "Physical/Painted" }
+            },
+            10: {
+                name: "Non-physically separated non-painted LM without RE",
+                description: "Painted separator from oncoming traffic, 2+ lanes without painted lane marks between same-direction lanes, and no road edge.",
+                profile: { "Oncoming sep.": "Painted", "Lanes": "2+", "Lane marks": "No", "Road edge": "No RE" }
+            },
+            11: {
+                name: "Not separated — with RE",
+                description: "No separation from oncoming traffic, with physical/painted road edges.",
+                profile: { "Oncoming sep.": "No separation", "Lanes": "—", "Lane marks": "—", "Road edge": "Physical/Painted" }
+            },
+            12: {
+                name: "Not separated — no LM, no RE",
+                description: "No separation from oncoming traffic and no road edge.",
+                profile: { "Oncoming sep.": "No separation", "Lanes": "—", "Lane marks": "—", "Road edge": "No RE" }
+            },
+            15: {
+                name: "Unknown",
+                description: "Placeholder for unknown, when the road type cannot be determined from the chart.",
+                profile: { "Oncoming sep.": "—", "Lanes": "—", "Lane marks": "—", "Road edge": "—" }
+            }
+        };
+
+        const UNCHARTED = "V.3 chart has no explicit row for physical separation, painted same-direction marks, and no road edge. This path is mapped to RART 1.";
+
+        function resolve(s) {
+            const { oncoming, lanes, marks, edge } = s;
+            if (oncoming === "none") return { rart: edge === "yes" ? 11 : 12 };
+            if (oncoming === "physical") {
+                if (lanes === "single") return { rart: 2 };
+                if (marks === "painted") {
+                    if (edge === "yes") return { ask: "split" };
+                    return { rart: 1, caveat: UNCHARTED };
+                }
+                return { rart: edge === "yes" ? 7 : 8 };
+            }
+            if (oncoming === "painted") {
+                if (lanes === "single") return { rart: edge === "yes" ? 4 : 6 };
+                if (marks === "painted") return { rart: edge === "yes" ? 3 : 5 };
+                return { rart: edge === "yes" ? 9 : 10 };
+            }
+            return { rart: 15, caveat: "This path did not match a V.3 row." };
+        }
+
+        const state = blankState();
+
+        function blankState() {
+            return { step: "oncoming", history: [], oncoming: null, lanes: null, marks: null, edge: null, split: null, rart: null, caveat: null };
+        }
+
+        function esc(value) {
+            return String(value)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;");
+        }
+
+        function prune() {
+            const keep = new Set(state.history.concat(state.step));
+            ["oncoming", "lanes", "marks", "edge", "split"].forEach(key => {
+                if (!keep.has(key)) state[key] = null;
+            });
+            if (state.step !== "result") {
+                state.rart = null;
+                state.caveat = null;
+            }
+        }
+
+        function svgIcon(name) {
+            const pen = 'viewBox="0 0 24 24" fill="none" stroke="#1f2eb8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"';
+            const paths = {
+                physical: '<path d="M4 20V9M20 20V9M4 13h16M4 16.5h16M8 9V5h8v4"/>',
+                painted: '<path d="M3 12h4.2M10 12h4.2M16.8 12H21" stroke-width="2.2"/>',
+                none: '<circle cx="12" cy="12" r="7.5"/><path d="M8 16.2 16.2 8"/>',
+                single: '<rect x="8" y="3" width="8" height="18" rx="1.4"/>',
+                multi: '<rect x="3" y="3.5" width="5" height="17" rx="1"/><rect x="9.5" y="3.5" width="5" height="17" rx="1"/><rect x="16" y="3.5" width="5" height="17" rx="1"/>',
+                marks: '<path d="M4 7h16" stroke-dasharray="2.4 2.2"/><path d="M4 12h16" stroke-dasharray="2.4 2.2"/><path d="M4 17h16" stroke-dasharray="2.4 2.2"/>',
+                nomarks: '<path d="M4 8h16M4 16h16"/><path d="M8 19 16 5"/>',
+                edge: '<path d="M5 19V8h3.2M19 19V8h-3.2M5 19h14"/>',
+                noedge: '<path d="M4 15c2.2-3.4 13.8-3.4 16 0"/><path d="M8 18.5h8"/>',
+                long: '<path d="M3 16h6.5c3.2 0 3.2-8 6.8-8H20"/><path d="M16.2 5.2 20 8l-3.8 2.8"/>',
+                short: '<path d="M12 3.5v17M3.5 12h17"/>'
+            };
+            return `<svg ${pen}>${paths[name] || ""}</svg>`;
+        }
+
+        function go(step) {
+            state.history.push(state.step);
+            state.step = step;
+            render();
+        }
+
+        function finish(decision) {
+            state.rart = decision.rart;
+            state.caveat = decision.caveat || null;
+            go("result");
+        }
+
+        function selectOncoming(id) {
+            state.oncoming = id;
+            state.lanes = state.marks = state.edge = state.split = null;
+            state.caveat = null;
+            go(id === "none" ? "edge" : "lanes");
+        }
+
+        function selectLanes(id) {
+            state.lanes = id;
+            state.marks = state.edge = state.split = null;
+            state.caveat = null;
+            if (state.oncoming === "physical" && id === "single") finish({ rart: 2 });
+            else go(id === "single" ? "edge" : "marks");
+        }
+
+        function selectMarks(id) {
+            state.marks = id;
+            state.edge = state.split = null;
+            state.caveat = null;
+            go("edge");
+        }
+
+        function selectEdge(id) {
+            state.edge = id;
+            state.split = null;
+            const decision = resolve(state);
+            if (decision.ask === "split") go("split");
+            else finish(decision);
+        }
+
+        function selectSplit(id) {
+            state.split = id;
+            finish({ rart: id === "long" ? 0 : 1 });
+        }
+
+        const HANDLERS = { oncoming: selectOncoming, lanes: selectLanes, marks: selectMarks, edge: selectEdge, split: selectSplit };
+
+        function isSkipped(id) {
+            if (!state.oncoming) return false;
+            if (state.oncoming === "none" && (id === "lanes" || id === "marks" || id === "split")) return true;
+            if (state.oncoming === "physical" && state.lanes === "single" && (id === "marks" || id === "edge" || id === "split")) return true;
+            if (state.lanes === "single" && id === "marks") return true;
+            if (id === "split") {
+                const eligible = state.oncoming === "physical" && state.lanes === "multi" && state.marks === "painted" && state.edge === "yes";
+                if (state.edge && !eligible) return true;
+                if (state.step === "result" && !state.split) return true;
+            }
+            return false;
+        }
+
+        function paintRail() {
+            const order = RAIL.map(s => s.id);
+            const current = order.indexOf(state.step);
+            document.getElementById("rail").innerHTML = RAIL.map((step, i) => {
+                let cls = "rail-step";
+                if (isSkipped(step.id)) cls += " skipped";
+                else if (step.id === state.step) cls += " current";
+                else if (i < current) cls += " done";
+                return `<div class="${cls}"><div class="dot"></div><span class="rail-label">${step.label}</span></div>`;
+            }).join("");
+        }
+
+        function crumbs() {
+            const labels = { oncoming: "Oncoming", lanes: "Lanes", marks: "Marks", edge: "Edge", split: "Split" };
+            const seen = [];
+            state.history.forEach(key => {
+                if (labels[key] && state[key] && !seen.includes(key)) seen.push(key);
+            });
+            return seen.map(key => `<span class="crumb">${labels[key]}: <b>${esc(ANSWERS[key][state[key]])}</b></span>`).join("");
+        }
+
+        function render() {
+            prune();
+            paintRail();
+            const stage = document.getElementById("stage");
+            if (state.step === "result") {
+                stage.innerHTML = resultHtml();
+                stage.querySelector("[data-back]").addEventListener("click", back);
+                stage.querySelector("[data-reset]").addEventListener("click", reset);
+                stage.querySelector("[data-copy]").addEventListener("click", copyResult);
+                return;
+            }
+            const step = COPY[state.step];
+            const crumbHtml = crumbs();
+            const note = step.note ? `<aside class="note${step.note.kind === "warn" ? " warn" : ""}"><strong>${esc(step.note.title)}</strong>${esc(step.note.text)}</aside>` : "";
+            const options = step.options.map(opt => `
+                <button class="choice" type="button" data-id="${esc(opt.id)}">
+                    <span class="ico">${svgIcon(opt.icon)}</span>
+                    <span><span class="choice-label">${esc(opt.label)}</span><span class="choice-detail">${esc(opt.detail)}</span></span>
+                    <span class="go" aria-hidden="true">›</span>
+                </button>`).join("");
+            const backBtn = state.history.length ? `<div class="actions"><button class="btn ghost" type="button" data-back>Back</button></div>` : "";
+            stage.innerHTML = `
+                ${crumbHtml ? `<div class="crumbs">${crumbHtml}</div>` : ""}
+                <div class="kicker">${esc(step.kicker)}</div>
+                <h1>${esc(step.title)}</h1>
+                <p class="sub">${esc(step.subtitle)}</p>
+                <div class="options">${options}</div>
+                ${note}
+                ${backBtn}`;
+            stage.querySelectorAll(".choice").forEach(btn => {
+                btn.addEventListener("click", () => HANDLERS[state.step](btn.dataset.id));
+            });
+            const backButton = stage.querySelector("[data-back]");
+            if (backButton) backButton.addEventListener("click", backStep);
+        }
+
+        function resultHtml() {
+            const def = RART[state.rart];
+            const profile = Object.entries(def.profile).map(([k, v]) => `<div><span>${esc(k)}</span><strong>${esc(v)}</strong></div>`).join("");
+            const answered = [
+                ["oncoming", "Oncoming separation"],
+                ["lanes", "Lanes"],
+                ["marks", "Lane marks"],
+                ["edge", "Road edge"],
+                ["split", "Junction / length"]
+            ].filter(([key]) => state[key]);
+            const answers = answered.map(([key, label]) => `<li><span>${esc(label)}</span><b>${esc(ANSWERS[key][state[key]])}</b></li>`).join("");
+            const caveat = state.caveat ? `<aside class="note warn"><strong>Note</strong>${esc(state.caveat)}</aside>` : "";
+            return `
+                <div class="hero">
+                    <div class="hero-kicker">Detected RART</div>
+                    <div class="hero-num">${state.rart}</div>
+                    <div class="hero-name">${esc(def.name)}</div>
+                </div>
+                <div class="spec">${profile}</div>
+                <p class="desc">${esc(def.description)}</p>
+                ${caveat}
+                <div class="section-label">Your answers</div>
+                <ul class="answers">${answers}</ul>
+                <div class="actions">
+                    <button class="btn ghost" type="button" data-back>Back</button>
+                    <div class="actions-right">
+                        <button class="btn ghost" type="button" data-copy>Copy RART ${state.rart}</button>
+                        <button class="btn primary" type="button" data-reset>Start over</button>
+                    </div>
+                </div>`;
+        }
+
+        function backStep() {
+            const prev = state.history.pop();
+            if (!prev) return;
+            state.step = prev;
+            render();
+        }
+
+        function back() { backStep(); }
+
+        function reset() {
+            const fresh = blankState();
+            Object.keys(state).forEach(k => { state[k] = fresh[k]; });
+            state.history = [];
+            render();
+        }
+
+        function copyResult() {
+            const text = `RART ${state.rart} — ${RART[state.rart].name}`;
+            const btn = document.querySelector("[data-copy]");
+            const done = () => {
+                btn.textContent = "Copied";
+                setTimeout(() => { btn.textContent = `Copy RART ${state.rart}`; }, 1200);
+            };
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done));
+            } else fallbackCopy(text, done);
+        }
+
+        function fallbackCopy(text, done) {
+            const area = document.createElement("textarea");
+            area.value = text;
+            document.body.appendChild(area);
+            area.select();
+            document.execCommand("copy");
+            area.remove();
+            done();
+        }
+
+        function openChart() {
+            const heads = ["RART", "Description", "Oncoming sep.", "Lanes", "Lane marks", "Road edge"];
+            const rows = Object.keys(RART).map(id => {
+                const item = RART[id];
+                const p = item.profile;
+                return `<tr><td class="num">${esc(id)}</td><td>${esc(item.name)}</td><td>${esc(p["Oncoming sep."])}</td><td>${esc(p["Lanes"])}</td><td>${esc(p["Lane marks"])}</td><td>${esc(p["Road edge"])}</td></tr>`;
+            }).join("");
+            document.getElementById("chartTable").innerHTML = `<table><thead><tr>${heads.map(h => `<th>${h}</th>`).join("")}</tr></thead><tbody>${rows}</tbody></table>`;
+            document.getElementById("overlay").hidden = false;
+        }
+
+        function closeChart() { document.getElementById("overlay").hidden = true; }
+
+        document.getElementById("openChart").addEventListener("click", openChart);
+        document.getElementById("closeChart").addEventListener("click", closeChart);
+        document.getElementById("overlay").addEventListener("click", (event) => {
+            if (event.target.id === "overlay") closeChart();
+        });
+        document.addEventListener("keydown", (event) => {
+            if (event.key === "Escape") closeChart();
+        });
+
+        render();
+    </script>
+</body>
+</html>
