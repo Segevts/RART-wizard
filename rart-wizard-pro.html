@@ -432,7 +432,7 @@
             lanes: { single: "Single lane (1)", multi: "Multi-lane (2+)" },
             marks: { painted: "Painted", none: "No lane marks" },
             edge: { yes: "Physical / painted", no: "No road edge" },
-            split: { long: "Soft merges only, 3 km+", short: "Junctions, or under 3 km" }
+            split: { long: "Soft merges only, 3 km rule met", short: "Junctions, or under 3 km" }
         };
 
         const COPY = {
@@ -471,7 +471,7 @@
                 kicker: "Road edge",
                 title: "Is there a road edge?",
                 subtitle: "Check the side border of the road, not the oncoming separator.",
-                note: null,
+                note: { kind: "info", title: "Road edge", text: "A road edge is the side border: a curb, wall, or painted edge line. Lane marks between same-direction lanes are a different question." },
                 options: [
                     { id: "yes", icon: "edge", label: "Has a road edge", detail: "Physical border (curb, wall) or a painted edge line." },
                     { id: "no", icon: "noedge", label: "No road edge", detail: "The road has no physical or painted edge." }
@@ -480,10 +480,10 @@
             split: {
                 kicker: "RART 0 or 1",
                 title: "Junctions and segment length",
-                subtitle: "This split decides separated, well-painted, multi-lane roads with a road edge.",
-                note: { kind: "warn", title: "Tagging", text: "When a RART 0 stretch is under 3 km between junctions, tag RART 1. Take 200 m before the junction and 50 m after it." },
+                subtitle: "Only this pair uses the 3 km and junction measurements. Other RARTs allow junctions without this check.",
+                note: { kind: "warn", title: "Tagging", text: "Under 3 km between junctions, tag RART 1. Take 200 m before the junction and 50 m after it, then return to RART 0. At a map end, measure the 3 km from the nearest junction outside the map, not from the DP start." },
                 options: [
-                    { id: "long", icon: "long", label: "Soft merges only, and 3 km+", detail: "Only soft merges or splits, and the segment is at least 3 km." },
+                    { id: "long", icon: "long", label: "Soft merges only, 3 km rule met", detail: "Only soft merges or splits, and 3 km from junction to junction. At a map end, measure from the junction outside the map. The mapped piece can be shorter than 3 km." },
                     { id: "short", icon: "short", label: "Junctions, or under 3 km", detail: "Regular junctions, or less than 3 km between junctions." }
                 ]
             }
@@ -492,86 +492,87 @@
         const RART = {
             0: {
                 name: "Separated multi-lane road",
-                description: "Physically separated from oncoming (or no oncoming lane), 2+ lanes with painted lane marks between same-direction lanes, physical/painted road edges, only soft merges and splits (no regular junctions), minimum 3 km length.",
-                profile: { "Oncoming sep.": "Physical/No oncoming", "Lanes": "2+", "Lane marks": "Painted", "Road edge": "Physical/Painted" }
+                description: "Physical separation or no oncoming lane, 2+ lanes, painted marks between those lanes, and a road edge. Soft merges and splits only. 3 km from junction to junction. At a map end, measure that 3 km from the nearest junction outside the map, not from the DP start.",
+                profile: { "Oncoming sep.": "Physical/No oncoming", "Lanes": "2+", "Lane marks": "Painted", "Road edge": "Physical/Painted", "Junctions": "Soft merges only", "Min length": "3 km" }
             },
             1: {
                 name: "Separated well painted road (multi-lane)",
-                description: "Physically separated from oncoming (or no oncoming lane), 2+ lanes with painted lane marks between same-direction lanes, physical/painted road edges, and regular junctions. When RART 0 is under 3 km between junctions, use RART 1. Tag 200 m before the junction and 50 m after.",
-                profile: { "Oncoming sep.": "Physical/No oncoming", "Lanes": "2+", "Lane marks": "Painted", "Road edge": "Physical/Painted" }
+                description: "Same road as RART 0, with regular junctions. Under 3 km between junctions, use RART 1. Tag 200 m before the junction and 50 m after.",
+                profile: { "Oncoming sep.": "Physical/No oncoming", "Lanes": "2+", "Lane marks": "Painted", "Road edge": "Physical/Painted", "Junctions": "Yes", "Min length": "—" }
             },
             2: {
                 name: "Separated single lane",
-                description: "Physically separated from oncoming (or no oncoming lane), single lane only.",
-                profile: { "Oncoming sep.": "Physical/No oncoming", "Lanes": "1", "Lane marks": "—", "Road edge": "—" }
+                description: "Physical separation or no oncoming lane, one lane, and a road edge. Junctions apply.",
+                profile: { "Oncoming sep.": "Physical/No oncoming", "Lanes": "1", "Lane marks": "—", "Road edge": "Physical/Painted", "Junctions": "Yes", "Min length": "—" }
             },
             3: {
                 name: "Non-physically separated well painted road",
-                description: "Painted separator from oncoming traffic, 2+ lanes with painted lane marks between same-direction lanes, and physical/painted road edges.",
-                profile: { "Oncoming sep.": "Painted", "Lanes": "2+", "Lane marks": "Painted", "Road edge": "Physical/Painted" }
+                description: "Painted separator from oncoming traffic, 2+ lanes, painted marks between those lanes, and a road edge. Junctions apply.",
+                profile: { "Oncoming sep.": "Painted", "Lanes": "2+", "Lane marks": "Painted", "Road edge": "Physical/Painted", "Junctions": "Yes", "Min length": "—" }
             },
             4: {
                 name: "Non-physically separated single lane (with RE)",
-                description: "Painted separator from oncoming traffic, single lane, with physical/painted road edges.",
-                profile: { "Oncoming sep.": "Painted", "Lanes": "1", "Lane marks": "—", "Road edge": "Physical/Painted" }
+                description: "Painted separator from oncoming traffic, one lane, and a road edge. Junctions apply.",
+                profile: { "Oncoming sep.": "Painted", "Lanes": "1", "Lane marks": "—", "Road edge": "Physical/Painted", "Junctions": "Yes", "Min length": "—" }
             },
             5: {
                 name: "Non-physically separated without RE (multi-lane)",
-                description: "Painted separator from oncoming traffic, 2+ lanes with painted lane marks between same-direction lanes, and no road edge.",
-                profile: { "Oncoming sep.": "Painted", "Lanes": "2+", "Lane marks": "Painted", "Road edge": "No RE" }
+                description: "Painted separator from oncoming traffic, 2+ lanes, painted marks between those lanes, and no road edge. Junctions apply.",
+                profile: { "Oncoming sep.": "Painted", "Lanes": "2+", "Lane marks": "Painted", "Road edge": "No RE", "Junctions": "Yes", "Min length": "—" }
             },
             6: {
                 name: "Non-physically separated single-lane (without RE)",
-                description: "Painted separator from oncoming traffic, single lane, and no road edge.",
-                profile: { "Oncoming sep.": "Painted", "Lanes": "1", "Lane marks": "—", "Road edge": "No RE" }
+                description: "Painted separator from oncoming traffic, one lane, and no road edge. Junctions apply.",
+                profile: { "Oncoming sep.": "Painted", "Lanes": "1", "Lane marks": "—", "Road edge": "No RE", "Junctions": "Yes", "Min length": "—" }
             },
             7: {
                 name: "Separated multi-lane non-painted LM with RE",
-                description: "Physically separated from oncoming (or no oncoming lane), 2+ lanes without painted lane marks between same-direction lanes, with physical/painted road edges.",
-                profile: { "Oncoming sep.": "Physical/No oncoming", "Lanes": "2+", "Lane marks": "No", "Road edge": "Physical/Painted" }
+                description: "Physical separation or no oncoming lane, 2+ lanes, no painted marks between those lanes, and a road edge. Junctions apply.",
+                profile: { "Oncoming sep.": "Physical/No oncoming", "Lanes": "2+", "Lane marks": "No", "Road edge": "Physical/Painted", "Junctions": "Yes", "Min length": "—" }
             },
             8: {
                 name: "Separated multi-lane non-painted LM without RE",
-                description: "Physically separated from oncoming (or no oncoming lane), 2+ lanes without painted lane marks between same-direction lanes, and no road edge.",
-                profile: { "Oncoming sep.": "Physical/No oncoming", "Lanes": "2+", "Lane marks": "No", "Road edge": "No RE" }
+                description: "Physical separation or no oncoming lane, 2+ lanes, no painted marks between those lanes, and no road edge. Junctions apply.",
+                profile: { "Oncoming sep.": "Physical/No oncoming", "Lanes": "2+", "Lane marks": "No", "Road edge": "No RE", "Junctions": "Yes", "Min length": "—" }
             },
             9: {
                 name: "Non-physically separated non-painted LM with RE",
-                description: "Painted separator from oncoming traffic, 2+ lanes without painted lane marks between same-direction lanes, with physical/painted road edges.",
-                profile: { "Oncoming sep.": "Painted", "Lanes": "2+", "Lane marks": "No", "Road edge": "Physical/Painted" }
+                description: "Painted separator from oncoming traffic, 2+ lanes, no painted marks between those lanes, and a road edge. Junctions apply.",
+                profile: { "Oncoming sep.": "Painted", "Lanes": "2+", "Lane marks": "No", "Road edge": "Physical/Painted", "Junctions": "Yes", "Min length": "—" }
             },
             10: {
                 name: "Non-physically separated non-painted LM without RE",
-                description: "Painted separator from oncoming traffic, 2+ lanes without painted lane marks between same-direction lanes, and no road edge.",
-                profile: { "Oncoming sep.": "Painted", "Lanes": "2+", "Lane marks": "No", "Road edge": "No RE" }
+                description: "Painted separator from oncoming traffic, 2+ lanes, no painted marks between those lanes, and no road edge. Junctions apply.",
+                profile: { "Oncoming sep.": "Painted", "Lanes": "2+", "Lane marks": "No", "Road edge": "No RE", "Junctions": "Yes", "Min length": "—" }
             },
             11: {
                 name: "Not separated — with RE",
-                description: "No separation from oncoming traffic, with physical/painted road edges.",
-                profile: { "Oncoming sep.": "No separation", "Lanes": "—", "Lane marks": "—", "Road edge": "Physical/Painted" }
+                description: "No separation from oncoming traffic, with a road edge. Lane marks between lanes are not used for this row.",
+                profile: { "Oncoming sep.": "No separation", "Lanes": "—", "Lane marks": "—", "Road edge": "Physical/Painted", "Junctions": "—", "Min length": "—" }
             },
             12: {
                 name: "Not separated — no LM, no RE",
                 description: "No separation from oncoming traffic and no road edge.",
-                profile: { "Oncoming sep.": "No separation", "Lanes": "—", "Lane marks": "—", "Road edge": "No RE" }
+                profile: { "Oncoming sep.": "No separation", "Lanes": "—", "Lane marks": "—", "Road edge": "No RE", "Junctions": "—", "Min length": "—" }
             },
             15: {
                 name: "Unknown",
-                description: "Placeholder for unknown, when the road type cannot be determined from the chart.",
-                profile: { "Oncoming sep.": "—", "Lanes": "—", "Lane marks": "—", "Road edge": "—" }
+                description: "No V.3 chart row matches this combination.",
+                profile: { "Oncoming sep.": "—", "Lanes": "—", "Lane marks": "—", "Road edge": "—", "Junctions": "—", "Min length": "—" }
             }
         };
-
-        const UNCHARTED = "V.3 chart has no explicit row for physical separation, painted same-direction marks, and no road edge. This path is mapped to RART 1.";
 
         function resolve(s) {
             const { oncoming, lanes, marks, edge } = s;
             if (oncoming === "none") return { rart: edge === "yes" ? 11 : 12 };
             if (oncoming === "physical") {
-                if (lanes === "single") return { rart: 2 };
+                if (lanes === "single") {
+                    if (edge === "yes") return { rart: 2 };
+                    return { rart: 15, caveat: "V.3 chart has no row for a physically separated single lane with no road edge." };
+                }
                 if (marks === "painted") {
                     if (edge === "yes") return { ask: "split" };
-                    return { rart: 1, caveat: UNCHARTED };
+                    return { rart: 15, caveat: "V.3 chart has no row for physical separation, painted marks between lanes, and no road edge." };
                 }
                 return { rart: edge === "yes" ? 7 : 8 };
             }
@@ -649,8 +650,7 @@
             state.lanes = id;
             state.marks = state.edge = state.split = null;
             state.caveat = null;
-            if (state.oncoming === "physical" && id === "single") finish({ rart: 2 });
-            else go(id === "single" ? "edge" : "marks");
+            go(id === "single" ? "edge" : "marks");
         }
 
         function selectMarks(id) {
@@ -678,7 +678,7 @@
         function isSkipped(id) {
             if (!state.oncoming) return false;
             if (state.oncoming === "none" && (id === "lanes" || id === "marks" || id === "split")) return true;
-            if (state.oncoming === "physical" && state.lanes === "single" && (id === "marks" || id === "edge" || id === "split")) return true;
+            if (state.oncoming === "physical" && state.lanes === "single" && (id === "marks" || id === "split")) return true;
             if (state.lanes === "single" && id === "marks") return true;
             if (id === "split") {
                 const eligible = state.oncoming === "physical" && state.lanes === "multi" && state.marks === "painted" && state.edge === "yes";
@@ -816,11 +816,12 @@
         }
 
         function openChart() {
-            const heads = ["RART", "Description", "Oncoming sep.", "Lanes", "Lane marks", "Road edge"];
+            const profileHeads = Object.keys(RART[0].profile);
+            const heads = ["RART", "Description"].concat(profileHeads);
             const rows = Object.keys(RART).map(id => {
                 const item = RART[id];
-                const p = item.profile;
-                return `<tr><td class="num">${esc(id)}</td><td>${esc(item.name)}</td><td>${esc(p["Oncoming sep."])}</td><td>${esc(p["Lanes"])}</td><td>${esc(p["Lane marks"])}</td><td>${esc(p["Road edge"])}</td></tr>`;
+                const cells = profileHeads.map(key => `<td>${esc(item.profile[key] || "—")}</td>`).join("");
+                return `<tr><td class="num">${esc(id)}</td><td>${esc(item.name)}</td>${cells}</tr>`;
             }).join("");
             document.getElementById("chartTable").innerHTML = `<table><thead><tr>${heads.map(h => `<th>${h}</th>`).join("")}</tr></thead><tbody>${rows}</tbody></table>`;
             document.getElementById("overlay").hidden = false;
