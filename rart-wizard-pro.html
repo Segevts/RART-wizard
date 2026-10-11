@@ -481,7 +481,7 @@
                 kicker: "RART 0 or 1",
                 title: "Junctions and segment length",
                 subtitle: "Only this pair uses the 3 km and junction measurements. Other RARTs allow junctions without this check.",
-                note: { kind: "warn", title: "Tagging", text: "Under 3 km between junctions, tag RART 1. Take 200 m before the junction and 50 m after it, then return to RART 0. At a map end, measure the 3 km from the nearest junction outside the map, not from the DP start." },
+                note: { kind: "warn", title: "Tagging", text: "Under 3 km between junctions, tag RART 1. Take 200 meters back before the junction and change to RART 1. If after the junction you go back into the highway, take 50 meters after the junction and apply RART 0 from there. At a map end, measure the 3 km from the nearest junction outside the map, not from the DP start." },
                 options: [
                     { id: "long", icon: "long", label: "Soft merges only, 3 km rule met", detail: "Only soft merges or splits, and 3 km from junction to junction. At a map end, measure from the junction outside the map. The mapped piece can be shorter than 3 km." },
                     { id: "short", icon: "short", label: "Junctions, or under 3 km", detail: "Regular junctions, or less than 3 km between junctions." }
@@ -497,7 +497,7 @@
             },
             1: {
                 name: "Separated well painted road (multi-lane)",
-                description: "Same road as RART 0, with regular junctions. Under 3 km between junctions, use RART 1. Tag 200 m before the junction and 50 m after.",
+                description: "Same road as RART 0, with regular junctions. Under 3 km between junctions, use RART 1. Take 200 meters back before the junction and change to RART 1. If after the junction you go back into the highway, take 50 meters after the junction and apply RART 0 from there.",
                 profile: { "Oncoming sep.": "Physical/No oncoming", "Lanes": "2+", "Lane marks": "Painted", "Road edge": "Physical/Painted", "Junctions": "Yes", "Min length": "—" }
             },
             2: {
