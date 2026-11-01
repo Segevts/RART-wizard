@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RART Seattle efficiency</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: #172b4d; background: #fff; }
+  .wrap { padding: 12px 14px 16px; }
+  .cards { display: flex; gap: 12px; flex-wrap: wrap; }
+  .card { flex: 1; min-width: 220px; border-radius: 10px; padding: 12px 14px; }
+  .g { background: #e3fcef; border: 1px solid #abf5d1; }
+  .b { background: #deebff; border: 1px solid #b3d4ff; }
+  .lbl { font-size: 11px; font-weight: 700; letter-spacing: .05em; }
+  .n { font-size: 36px; font-weight: 800; line-height: 1; margin: 4px 0; }
+  .tabs { display: flex; gap: 6px; margin: 12px 0 8px; flex-wrap: wrap; }
+  .tabs button { border: 1px solid #dfe1e6; background: #f4f5f7; border-radius: 6px; padding: 6px 10px; font-weight: 700; cursor: pointer; color: #172b4d; }
+  .tabs button.on { background: #172b4d; color: #fff; border-color: #172b4d; }
+  .panel { display: none; }
+  .panel.on { display: block; }
+  .bar { height: 12px; border-radius: 6px; margin: 3px 0 8px; }
+  .muted { color: #5e6c84; font-size: 13px; margin: 0 0 6px; }
+  .warn { background: #fffae6; border: 1px solid #ffe380; border-radius: 8px; padding: 8px 10px; font-size: 13px; }
+  a.play { display: inline-block; margin: 6px 8px 0 0; padding: 6px 10px; border-radius: 6px; color: #fff; text-decoration: none; font-weight: 700; font-size: 13px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="cards">
+    <div class="card g">
+      <div class="lbl" style="color:#006644">TEST 1 - 21-22 OCT</div>
+      <div class="n" style="color:#006644">40.4%</div>
+      <div>Alby Pacios and Tricia Gibaga. 100 tiles. Methods swapped.</div>
+      <div>2 h 25 min 48 sec vs 4 h 4 min 28 sec</div>
+    </div>
+    <div class="card b">
+      <div class="lbl" style="color:#0747a6">TEST 2 - ALBY AND ANN</div>
+      <div class="n" style="color:#0747a6">41.2%</div>
+      <div>Same 53 tiles each way. Alby 15.7%. Ann 62.8%.</div>
+      <div>1 h 47 min 50 sec vs 3 h 3 min 17 sec</div>
+    </div>
+  </div>
+  <div class="tabs">
+    <button class="on" type="button" data-tab="t1">Test 1</button>
+    <button type="button" data-tab="t2">Test 2</button>
+    <button type="button" data-tab="say">What they said</button>
+    <button type="button" data-tab="vid">Recordings</button>
+  </div>
+  <div class="panel on" id="t1">
+    <p class="muted">21 Oct: Alby generated 61 min 42 sec, Tricia new tool 86 min 30 sec (28.7%). 22 Oct they swapped: Tricia 1:24:06, Alby 2:37:58 (46.8%). Do not average those two percents.</p>
+    <div class="muted">21 Oct Alby generated</div>
+    <div class="bar" style="width:71%;background:#36b37e"></div>
+    <div class="muted">21 Oct Tricia new tool</div>
+    <div class="bar" style="width:100%;background:#97a0af"></div>
+    <div class="muted">22 Oct Tricia generated</div>
+    <div class="bar" style="width:53%;background:#36b37e"></div>
+    <div class="muted">22 Oct Alby new tool</div>
+    <div class="bar" style="width:100%;background:#97a0af"></div>
+    <p class="warn">Only miss: 21 Oct interchange. New tool shorter by 41 sec.</p>
+  </div>
+  <div class="panel" id="t2">
+    <p class="muted">Hi-Way 30, Urban 13, Interchange 10. Each person did both methods. Do not add this clock to Test 1.</p>
+    <div class="muted">Alby generated 1:10:59</div>
+    <div class="bar" style="width:72%;background:#4c9aff"></div>
+    <div class="muted">Alby new tool 1:24:12</div>
+    <div class="bar" style="width:85%;background:#97a0af"></div>
+    <div class="muted">Ann generated 0:36:51</div>
+    <div class="bar" style="width:37%;background:#4c9aff"></div>
+    <div class="muted">Ann new tool 1:39:05</div>
+    <div class="bar" style="width:100%;background:#97a0af"></div>
+    <p class="warn">Ann highway with generated polygons is 6 min 30 sec for 30 tiles. Alby on the same count is 24 min 12 sec. Alby urban went the other way by 8 sec.</p>
+  </div>
+  <div class="panel" id="say">
+    <p class="muted"><strong>Alby.</strong> Easier with generated polygons: assign a value, do not draw a polygon on each tile. Hard part is overpasses. The shape is one piece, so the upper part has to be deleted before the road underneath. A split can throw a large polygon that has to be tagged again.</p>
+    <p class="muted"><strong>Ann.</strong> Easiest is the generated polygon. Most of the work is tagging. Multi-level roads are hard to separate. On the new tool, a polygon can snap to another and merge into one shape. She wants the straight split kept.</p>
+  </div>
+  <div class="panel" id="vid">
+    <p class="muted">File names do not match the tracker. Shangg is unexplained. Clocks above stay the source for who did which method.</p>
+    <a class="play" style="background:#006644" target="_blank" rel="noopener" href="https://drive.google.com/file/d/1y__esSapW4dcp2z9VQS-obIaRdk6lVfh/view">AiP2 With Polygon</a>
+    <a class="play" style="background:#172b4d" target="_blank" rel="noopener" href="https://drive.google.com/file/d/1fKC68QQEhgpG-QePOyiKeuqVrWzRnCrE/view">AIP1 Without Polygon</a>
+    <a class="play" style="background:#006644" target="_blank" rel="noopener" href="https://drive.google.com/file/d/14l_EOSyPUibwVVD4xnfvNnuiPqspQytb/view">Shangg with Polygon</a>
+    <a class="play" style="background:#172b4d" target="_blank" rel="noopener" href="https://drive.google.com/file/d/1UnPRHuWah4lhOZnheOjcu5by6VPJHOjW/view">Shangg without Polygon</a>
+  </div>
+</div>
+<script>
+  document.querySelectorAll(".tabs button").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      document.querySelectorAll(".tabs button").forEach(function (b) { b.classList.remove("on"); });
+      document.querySelectorAll(".panel").forEach(function (p) { p.classList.remove("on"); });
+      btn.classList.add("on");
+      document.getElementById(btn.getAttribute("data-tab")).classList.add("on");
+    });
+  });
+</script>
+</body>
+</html>
