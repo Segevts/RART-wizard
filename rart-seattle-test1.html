@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Test 1</title>
+<style>
+  body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: #16182b; background: #f3f5fb; padding: 14px 16px 8px; }
+  h2 { margin: 0 0 6px; font-size: 18px; color: #141a72; }
+  h3 { margin: 14px 0 6px; font-size: 14px; color: #1f2eb8; }
+  p { margin: 0 0 8px; font-size: 13px; line-height: 1.4; color: #343b55; }
+  table { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid #e3e7f3; font-size: 13px; margin: 0 0 8px; }
+  th { text-align: left; background: #1f2eb8; color: #fff; padding: 7px 8px; font-weight: 650; }
+  td { padding: 6px 8px; border-top: 1px solid #e3e7f3; }
+  tr:nth-child(even) td { background: #f3f5fd; }
+  .num { text-align: right; white-space: nowrap; }
+  .note { background: #eef1ff; border: 1px solid #dde3f6; border-radius: 8px; padding: 8px 10px; font-size: 13px; }
+</style>
+</head>
+<body>
+  <h2>Test 1 - Alby Pacios and Tricia Gibaga</h2>
+  <p>Methods swapped by day. The road mix changes, so the two clocks for one person are not a ranking. 40.4% is the summed clocks (5,920 sec of 14,668), not the average of 28.7% and 46.8%. Per tile: 87.5 sec with generated polygons, 146.7 sec with the new tool.</p>
+  <table>
+    <thead><tr><th>Day</th><th>Mix</th><th>Generated polygons</th><th>New tool</th><th class="num">Less time</th></tr></thead>
+    <tbody>
+      <tr><td>21 Oct</td><td>Hi-Way 15, Urban 23, Interchange 12</td><td>Alby, 61 min 42 sec</td><td>Tricia, 86 min 30 sec</td><td class="num">28.7%</td></tr>
+      <tr><td>22 Oct</td><td>Highway 22, Urban 16, Interchange 12</td><td>Tricia, 1:24:06</td><td>Alby, 2:37:58</td><td class="num">46.8%</td></tr>
+      <tr><td><strong>Both</strong></td><td>Hi-Way 37, Urban 39, Interchange 24</td><td><strong>2 h 25 min 48 sec</strong></td><td><strong>4 h 4 min 28 sec</strong></td><td class="num"><strong>40.4%</strong></td></tr>
+    </tbody>
+  </table>
+  <p class="note">Tracker header for Tricia on 21 Oct says 1:26:31. Rows and the screenshot sum to 86 min 30 sec. This report uses 86 min 30 sec. Interchange that day is the only Test 1 row the other way: new tool shorter by 41 sec.</p>
+  <h3>21 Oct</h3>
+  <table>
+    <thead><tr><th>Road type</th><th class="num">Tiles</th><th>Alby, generated</th><th>Tricia, new tool</th><th class="num">Less time</th></tr></thead>
+    <tbody>
+      <tr><td>Hi-Way</td><td class="num">15</td><td>18 min 1 sec</td><td>38 min 20 sec</td><td class="num">53.0%</td></tr>
+      <tr><td>Urban</td><td class="num">23</td><td>22 min 2 sec</td><td>27 min 12 sec</td><td class="num">19.0%</td></tr>
+      <tr><td>Interchange</td><td class="num">12</td><td>21 min 39 sec</td><td>20 min 58 sec</td><td class="num">New tool, 41 sec shorter</td></tr>
+      <tr><td><strong>Total</strong></td><td class="num">50</td><td><strong>61 min 42 sec</strong></td><td><strong>86 min 30 sec</strong></td><td class="num"><strong>28.7%</strong></td></tr>
+    </tbody>
+  </table>
+  <h3>22 Oct</h3>
+  <table>
+    <thead><tr><th>Road type</th><th class="num">Tiles</th><th>Tricia, generated</th><th>Alby, new tool</th><th class="num">Less time</th></tr></thead>
+    <tbody>
+      <tr><td>Highway</td><td class="num">22</td><td>0:42:29</td><td>1:18:02</td><td class="num">45.6%</td></tr>
+      <tr><td>Urban</td><td class="num">16</td><td>0:25:39</td><td>0:33:01</td><td class="num">22.3%</td></tr>
+      <tr><td>Interchange</td><td class="num">12</td><td>0:15:58</td><td>0:46:54</td><td class="num">66.0%</td></tr>
+      <tr><td><strong>Total</strong></td><td class="num">50</td><td><strong>1:24:06</strong></td><td><strong>2:37:58</strong></td><td class="num"><strong>46.8%</strong></td></tr>
+    </tbody>
+  </table>
+  <h3>Typed RART after this test, 22 Oct</h3>
+  <p>Volume check only. Not a quality audit, and not a Test 2 result. A 1 Nov recount failed.</p>
+  <table>
+    <thead><tr><th></th><th>Generated map</th><th>From-scratch map</th></tr></thead>
+    <tbody>
+      <tr><td>Generic polygons</td><td>2451</td><td>342</td></tr>
+      <tr><td>Still RART_TBD</td><td>1687</td><td>0</td></tr>
+      <tr><td>Typed RART</td><td>340</td><td>342, all RART</td></tr>
+      <tr><td>Other non-RART</td><td>424</td><td>0</td></tr>
+    </tbody>
+  </table>
+  <p>Close: RART_0 66 vs 61, RART_2 85 vs 83, RART_4 72 vs 77. Largest gaps: RART_11 67 vs 89, RART_1 26 vs 16, RART_3 18 vs 11.</p>
+</body>
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Test 2</title>
+<style>
+  body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: #16182b; background: #f3f5fb; padding: 14px 16px 8px; }
+  h2 { margin: 0 0 6px; font-size: 18px; color: #141a72; }
+  h3 { margin: 14px 0 6px; font-size: 14px; color: #1f2eb8; }
+  p { margin: 0 0 8px; font-size: 13px; line-height: 1.4; color: #343b55; }
+  table { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid #e3e7f3; font-size: 13px; margin: 0 0 8px; }
+  th { text-align: left; background: #1f2eb8; color: #fff; padding: 7px 8px; font-weight: 650; }
+  td { padding: 6px 8px; border-top: 1px solid #e3e7f3; }
+  tr:nth-child(even) td { background: #f3f5fd; }
+  .num { text-align: right; white-space: nowrap; }
+  .warn { background: #fff8eb; border: 1px solid #f0ddb4; color: #8a5a10; border-radius: 8px; padding: 8px 10px; font-size: 13px; }
+</style>
+</head>
+<body>
+  <h2>Test 2 - Alby and Ann</h2>
+  <p>Ann replaced Tricia. No date on the sheet. Each person did both methods: Hi-Way 30, Urban 13, Interchange 10. 106 passes per method. Per tile: 61.0 sec with generated polygons, 103.7 sec with the new tool. Saved 1 h 15 min 27 sec. Do not add this clock to Test 1.</p>
+  <table>
+    <thead><tr><th>AIP</th><th>Generated polygons</th><th>New tool</th><th class="num">Less time</th></tr></thead>
+    <tbody>
+      <tr><td>Alby</td><td>1:10:59</td><td>1:24:12</td><td class="num">15.7% (13 min 13 sec)</td></tr>
+      <tr><td>Ann</td><td>0:36:51</td><td>1:39:05</td><td class="num">62.8% (1 h 2 min 14 sec)</td></tr>
+      <tr><td><strong>Both</strong></td><td><strong>1 h 47 min 50 sec</strong></td><td><strong>3 h 3 min 17 sec</strong></td><td class="num"><strong>41.2%</strong></td></tr>
+    </tbody>
+  </table>
+  <p class="warn">Ann's highway row with generated polygons is 6 min 30 sec for 30 tiles. Alby's same cell is 24 min 12 sec. That row drives most of her 62.8%. Reported as recorded.</p>
+  <h3>Alby</h3>
+  <table>
+    <thead><tr><th>Road type</th><th class="num">Tiles</th><th>With generated polygons</th><th>Without</th><th class="num">Less time</th></tr></thead>
+    <tbody>
+      <tr><td>Hi-Way</td><td class="num">30</td><td>0:24:12</td><td>0:27:23</td><td class="num">11.6%</td></tr>
+      <tr><td>Urban</td><td class="num">13</td><td>0:25:33</td><td>0:25:25</td><td class="num">Without shorter by 8 sec</td></tr>
+      <tr><td>Interchange</td><td class="num">10</td><td>0:21:14</td><td>0:31:24</td><td class="num">32.4%</td></tr>
+    </tbody>
+  </table>
+  <h3>Ann</h3>
+  <p>Her sheet lists the new tool first, then generated polygons.</p>
+  <table>
+    <thead><tr><th>Road type</th><th class="num">Tiles</th><th>Without</th><th>With generated polygons</th><th class="num">Less time</th></tr></thead>
+    <tbody>
+      <tr><td>Hi-Way</td><td class="num">30</td><td>0:39:37</td><td>0:06:30</td><td class="num">83.6%</td></tr>
+      <tr><td>Urban</td><td class="num">13</td><td>0:31:35</td><td>0:10:40</td><td class="num">66.2%</td></tr>
+      <tr><td>Interchange</td><td class="num">10</td><td>0:27:53</td><td>0:19:41</td><td class="num">29.4%</td></tr>
+    </tbody>
+  </table>
+  <h3>Both, by road type</h3>
+  <table>
+    <thead><tr><th>Road type</th><th class="num">Tiles</th><th>Generated polygons</th><th>New tool</th><th class="num">Less time</th></tr></thead>
+    <tbody>
+      <tr><td>Hi-Way</td><td class="num">60</td><td>0:30:42</td><td>1:07:00</td><td class="num">54.2%</td></tr>
+      <tr><td>Urban</td><td class="num">26</td><td>0:36:13</td><td>0:57:00</td><td class="num">36.5%</td></tr>
+      <tr><td>Interchange</td><td class="num">20</td><td>0:40:55</td><td>0:59:17</td><td class="num">31.0%</td></tr>
+    </tbody>
+  </table>
+</body>
+</html>
