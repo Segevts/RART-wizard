@@ -3,122 +3,186 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>RART Seattle</title>
+<title>RART Seattle efficiency</title>
 <style>
+  :root {
+    --me: #1f2eb8;
+    --me-dark: #141a72;
+    --ink: #16182b;
+    --muted: #5c657d;
+    --line: #e3e7f3;
+    --ice: #f3f5fd;
+    --bg: #f3f5fb;
+    --warn: #8a5a10;
+    --warn-bg: #fff8eb;
+    --warn-line: #f0ddb4;
+  }
   * { box-sizing: border-box; }
-  html, body { margin: 0; height: 100%; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
-    color: #f5f7fb;
-    background:
-      radial-gradient(900px 420px at 8% -10%, rgba(94, 234, 212, 0.35), transparent 55%),
-      radial-gradient(700px 380px at 100% 0%, rgba(96, 165, 250, 0.38), transparent 50%),
-      radial-gradient(500px 300px at 70% 120%, rgba(167, 139, 250, 0.25), transparent 50%),
-      #070b14;
-  }
-  .wrap { padding: 18px 18px 14px; }
-  .kicker { font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: rgba(255,255,255,.55); margin: 0 0 12px; }
-  .cards { display: flex; gap: 12px; flex-wrap: wrap; }
-  .glass {
-    background: rgba(255,255,255,.08);
-    border: 1px solid rgba(255,255,255,.18);
-    box-shadow: inset 0 1px 0 rgba(255,255,255,.28), 0 18px 40px rgba(0,0,0,.28);
-    backdrop-filter: blur(22px);
-    -webkit-backdrop-filter: blur(22px);
-    border-radius: 22px;
-  }
-  .card { flex: 1; min-width: 230px; padding: 16px 18px 14px; }
-  .lbl { font-size: 11px; font-weight: 650; letter-spacing: .08em; color: rgba(255,255,255,.62); }
-  .n { font-size: 54px; font-weight: 700; letter-spacing: -0.04em; line-height: .95; margin: 8px 0 6px; }
-  .sub { font-size: 13px; line-height: 1.35; color: rgba(255,255,255,.78); }
-  .clock { margin-top: 8px; font-size: 13px; color: rgba(255,255,255,.9); font-weight: 600; }
-  .seg { display: flex; gap: 4px; margin: 14px 0 10px; padding: 4px; width: fit-content; max-width: 100%; flex-wrap: wrap; }
-  .seg label { padding: 7px 12px; border-radius: 999px; font-size: 13px; font-weight: 650; cursor: pointer; color: rgba(255,255,255,.72); }
-  input { position: absolute; opacity: 0; pointer-events: none; }
-  #t1:checked ~ .seg label[for="t1"],
-  #t2:checked ~ .seg label[for="t2"],
-  #t3:checked ~ .seg label[for="t3"],
-  #t4:checked ~ .seg label[for="t4"] {
-    background: rgba(255,255,255,.18);
+  body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: var(--ink); background: var(--bg); }
+  .hero {
+    background: linear-gradient(165deg, #2a3adf 0%, #1f2eb8 42%, #141a72 100%);
     color: #fff;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,.35);
+    padding: 22px 22px 18px;
   }
-  .panel { display: none; padding: 14px 16px; }
-  #t1:checked ~ .panels .p1,
-  #t2:checked ~ .panels .p2,
-  #t3:checked ~ .panels .p3,
-  #t4:checked ~ .panels .p4 { display: block; }
-  .muted { margin: 0 0 8px; font-size: 13px; line-height: 1.4; color: rgba(255,255,255,.78); }
-  .rowlab { font-size: 12px; color: rgba(255,255,255,.55); }
-  .track { height: 8px; border-radius: 99px; background: rgba(255,255,255,.08); margin: 4px 0 10px; overflow: hidden; }
-  .fill { height: 100%; border-radius: 99px; }
-  .gfill { background: linear-gradient(90deg, #5eead4, #34d399); }
-  .bfill { background: linear-gradient(90deg, #93c5fd, #60a5fa); }
-  .nfill { background: rgba(255,255,255,.35); }
-  .note { margin: 4px 0 0; padding: 8px 10px; border-radius: 12px; background: rgba(251, 191, 36, .12); border: 1px solid rgba(251, 191, 36, .28); color: #fde68a; font-size: 13px; }
-  a.play {
-    display: inline-block; margin: 6px 8px 0 0; padding: 8px 12px; border-radius: 999px;
-    color: #fff; text-decoration: none; font-weight: 650; font-size: 13px;
-    background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.2);
-  }
+  .kicker { margin: 0 0 6px; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.72); }
+  h1 { margin: 0 0 6px; font-size: 26px; letter-spacing: -.03em; font-weight: 700; }
+  .lead { margin: 0 0 14px; max-width: 760px; color: rgba(255,255,255,.88); font-size: 14px; line-height: 1.45; }
+  .stats { display: flex; gap: 12px; flex-wrap: wrap; }
+  .stat { background: #fff; color: var(--ink); border-radius: 12px; padding: 12px 14px; min-width: 220px; flex: 1; }
+  .stat b { display: block; color: var(--me); font-size: 32px; letter-spacing: -.04em; line-height: 1; margin: 2px 0 6px; }
+  .stat span { display: block; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+  .stat p { margin: 0; font-size: 13px; line-height: 1.35; }
+  main { padding: 16px 22px 28px; }
+  h2 { margin: 22px 0 8px; font-size: 18px; color: var(--me-dark); }
+  h3 { margin: 14px 0 6px; font-size: 14px; }
+  p { margin: 0 0 8px; font-size: 14px; line-height: 1.45; }
+  .muted { color: var(--muted); }
+  table { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; margin: 8px 0 12px; font-size: 13px; }
+  th { text-align: left; background: var(--me); color: #fff; font-weight: 650; padding: 8px 10px; }
+  td { padding: 7px 10px; border-top: 1px solid var(--line); vertical-align: top; }
+  tr:nth-child(even) td { background: var(--ice); }
+  td.num, th.num { text-align: right; white-space: nowrap; }
+  .note, .warn { border-radius: 10px; padding: 10px 12px; margin: 8px 0 12px; font-size: 13px; line-height: 1.4; }
+  .note { background: #eef1ff; border: 1px solid #dde3f6; }
+  .warn { background: var(--warn-bg); border: 1px solid var(--warn-line); color: var(--warn); }
+  .cols { display: flex; gap: 12px; flex-wrap: wrap; }
+  .cols .box { flex: 1; min-width: 260px; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
+  .cols h3 { margin-top: 0; color: var(--me); }
+  a { color: var(--me); }
+  a.play { display: inline-block; margin: 4px 8px 4px 0; padding: 7px 12px; border-radius: 999px; background: var(--me); color: #fff; text-decoration: none; font-weight: 650; font-size: 13px; }
 </style>
 </head>
 <body>
-<div class="wrap">
-  <p class="kicker">Seattle &middot; two tests, two clocks</p>
-  <div class="cards">
-    <div class="glass card">
-      <div class="lbl">TEST 1 &middot; 21-22 OCT</div>
-      <div class="n">40.4%</div>
-      <div class="sub">Alby Pacios and Tricia Gibaga. Methods swapped. 100 tiles.</div>
-      <div class="clock">2 h 25 min 48 sec vs 4 h 4 min 28 sec</div>
+<header class="hero">
+  <p class="kicker">Road Application Road Type</p>
+  <h1>Seattle efficiency test</h1>
+  <p class="lead">Two separate tests. Do not add the clocks. Generated polygons were faster because the shape is already there. The new RART tools (Shift+X, Shift+R) are how an empty map, or a missing polygon, gets drawn. They are not a failed tool.</p>
+  <div class="stats">
+    <div class="stat">
+      <span>Test 1 - Alby and Tricia</span>
+      <b>40.4%</b>
+      <p>21-22 Oct 2026. Methods swapped. 100 tiles per method. 2 h 25 min 48 sec vs 4 h 4 min 28 sec.</p>
     </div>
-    <div class="glass card">
-      <div class="lbl">TEST 2 &middot; ALBY AND ANN</div>
-      <div class="n">41.2%</div>
-      <div class="sub">Same 53 tiles each way. Alby saved 15.7%. Ann saved 62.8%.</div>
-      <div class="clock">1 h 47 min 50 sec vs 3 h 3 min 17 sec</div>
-    </div>
-  </div>
-  <input type="radio" name="tab" id="t1" checked>
-  <input type="radio" name="tab" id="t2">
-  <input type="radio" name="tab" id="t3">
-  <input type="radio" name="tab" id="t4">
-  <div class="glass seg">
-    <label for="t1">Test 1</label>
-    <label for="t2">Test 2</label>
-    <label for="t3">What they said</label>
-    <label for="t4">Recordings</label>
-  </div>
-  <div class="panels">
-    <div class="glass panel p1">
-      <p class="muted">21 Oct: Alby on generated polygons, 61 min 42 sec. Tricia on the new tool, 86 min 30 sec. 22 Oct they swapped: Tricia 1:24:06, Alby 2:37:58. 40.4% is the summed clocks, not the average of 28.7% and 46.8%.</p>
-      <div class="rowlab">21 Oct generated</div><div class="track"><div class="fill gfill" style="width:71%"></div></div>
-      <div class="rowlab">21 Oct new tool</div><div class="track"><div class="fill nfill" style="width:100%"></div></div>
-      <div class="rowlab">22 Oct generated</div><div class="track"><div class="fill gfill" style="width:53%"></div></div>
-      <div class="rowlab">22 Oct new tool</div><div class="track"><div class="fill nfill" style="width:100%"></div></div>
-      <p class="note">Only miss: 21 Oct interchange. New tool shorter by 41 sec.</p>
-    </div>
-    <div class="glass panel p2">
-      <p class="muted">Hi-Way 30, Urban 13, Interchange 10. Each person did both methods. Do not add this clock to Test 1.</p>
-      <div class="rowlab">Alby generated 1:10:59</div><div class="track"><div class="fill bfill" style="width:72%"></div></div>
-      <div class="rowlab">Alby new tool 1:24:12</div><div class="track"><div class="fill nfill" style="width:85%"></div></div>
-      <div class="rowlab">Ann generated 0:36:51</div><div class="track"><div class="fill bfill" style="width:37%"></div></div>
-      <div class="rowlab">Ann new tool 1:39:05</div><div class="track"><div class="fill nfill" style="width:100%"></div></div>
-      <p class="note">Ann highway with generated polygons is 6 min 30 sec for 30 tiles. Alby on the same count is 24 min 12 sec. Alby urban went the other way by 8 sec.</p>
-    </div>
-    <div class="glass panel p3">
-      <p class="muted"><strong>Alby.</strong> Easier with generated polygons. You assign a value. You do not draw a polygon on each tile. Hard part is overpasses: one continuous shape, so the upper piece has to be deleted before the road underneath. A split can throw a large polygon that has to be tagged again.</p>
-      <p class="muted"><strong>Ann.</strong> Easiest is the generated polygon. Most of the work is tagging. Multi-level roads are hard to separate. On the new tool a polygon can snap to another and merge into one shape. She wants the straight split kept.</p>
-    </div>
-    <div class="glass panel p4">
-      <p class="muted">File names do not match the tracker. Shangg is unexplained. The clocks above stay the source for who did which method.</p>
-      <a class="play" target="_blank" rel="noopener" href="https://drive.google.com/file/d/1y__esSapW4dcp2z9VQS-obIaRdk6lVfh/view">AiP2 With Polygon</a>
-      <a class="play" target="_blank" rel="noopener" href="https://drive.google.com/file/d/1fKC68QQEhgpG-QePOyiKeuqVrWzRnCrE/view">AIP1 Without Polygon</a>
-      <a class="play" target="_blank" rel="noopener" href="https://drive.google.com/file/d/14l_EOSyPUibwVVD4xnfvNnuiPqspQytb/view">Shangg with Polygon</a>
-      <a class="play" target="_blank" rel="noopener" href="https://drive.google.com/file/d/1UnPRHuWah4lhOZnheOjcu5by6VPJHOjW/view">Shangg without Polygon</a>
+    <div class="stat">
+      <span>Test 2 - Alby and Ann</span>
+      <b>41.2%</b>
+      <p>Same 53 tiles each way. Alby 15.7%. Ann 62.8%. 1 h 47 min 50 sec vs 3 h 3 min 17 sec.</p>
     </div>
   </div>
-</div>
+</header>
+<main>
+  <h2>Test 1 - Alby Pacios and Tricia Gibaga</h2>
+  <p>Methods swapped by day. The road mix is not the same on both days, so a person's two clocks are not a ranking. 40.4% is the summed clocks (5,920 sec of 14,668). It is not the average of 28.7% and 46.8%. Per tile: 87.5 sec with generated polygons, 146.7 sec with the new tool.</p>
+  <table>
+    <thead><tr><th>Day</th><th>Mix</th><th>Generated polygons</th><th>New tool</th><th class="num">Less time</th></tr></thead>
+    <tbody>
+      <tr><td>21 Oct</td><td>Hi-Way 15, Urban 23, Interchange 12</td><td>Alby, 61 min 42 sec</td><td>Tricia, 86 min 30 sec</td><td class="num">28.7%</td></tr>
+      <tr><td>22 Oct</td><td>Highway 22, Urban 16, Interchange 12</td><td>Tricia, 1:24:06</td><td>Alby, 2:37:58</td><td class="num">46.8%</td></tr>
+      <tr><td><strong>Both</strong></td><td>Hi-Way 37, Urban 39, Interchange 24</td><td><strong>2 h 25 min 48 sec</strong></td><td><strong>4 h 4 min 28 sec</strong></td><td class="num"><strong>40.4%</strong></td></tr>
+    </tbody>
+  </table>
+  <p class="note">Tracker header for Tricia on 21 Oct says 1:26:31. The rows and the screenshot sum to 86 min 30 sec. This report uses 86 min 30 sec.</p>
+
+  <h3>21 Oct by road type</h3>
+  <table>
+    <thead><tr><th>Road type</th><th class="num">Tiles</th><th>Alby, generated</th><th>Tricia, new tool</th><th class="num">Less time on generated</th></tr></thead>
+    <tbody>
+      <tr><td>Hi-Way</td><td class="num">15</td><td>18 min 1 sec</td><td>38 min 20 sec</td><td class="num">53.0%</td></tr>
+      <tr><td>Urban</td><td class="num">23</td><td>22 min 2 sec</td><td>27 min 12 sec</td><td class="num">19.0%</td></tr>
+      <tr><td>Interchange</td><td class="num">12</td><td>21 min 39 sec</td><td>20 min 58 sec</td><td class="num">New tool shorter by 41 sec</td></tr>
+      <tr><td><strong>Total</strong></td><td class="num"><strong>50</strong></td><td><strong>61 min 42 sec</strong></td><td><strong>86 min 30 sec</strong></td><td class="num"><strong>28.7%</strong></td></tr>
+    </tbody>
+  </table>
+
+  <h3>22 Oct by road type</h3>
+  <table>
+    <thead><tr><th>Road type</th><th class="num">Tiles</th><th>Tricia, generated</th><th>Alby, new tool</th><th class="num">Less time on generated</th></tr></thead>
+    <tbody>
+      <tr><td>Highway</td><td class="num">22</td><td>0:42:29</td><td>1:18:02</td><td class="num">45.6%</td></tr>
+      <tr><td>Urban</td><td class="num">16</td><td>0:25:39</td><td>0:33:01</td><td class="num">22.3%</td></tr>
+      <tr><td>Interchange</td><td class="num">12</td><td>0:15:58</td><td>0:46:54</td><td class="num">66.0%</td></tr>
+      <tr><td><strong>Total</strong></td><td class="num"><strong>50</strong></td><td><strong>1:24:06</strong></td><td><strong>2:37:58</strong></td><td class="num"><strong>46.8%</strong></td></tr>
+    </tbody>
+  </table>
+
+  <h3>Typed RART after Test 1, 22 Oct</h3>
+  <p class="muted">A volume check, not a quality audit, and not a Test 2 result. A 1 Nov recount failed (polygon API HTTP 500).</p>
+  <table>
+    <thead><tr><th></th><th>Generated map</th><th>From-scratch map</th></tr></thead>
+    <tbody>
+      <tr><td>Generic polygons</td><td>2451</td><td>342</td></tr>
+      <tr><td>Still RART_TBD</td><td>1687</td><td>0</td></tr>
+      <tr><td>Typed RART</td><td>340</td><td>342, all RART</td></tr>
+      <tr><td>Other non-RART</td><td>424</td><td>0</td></tr>
+    </tbody>
+  </table>
+  <p>Close classes: RART_0 66 vs 61, RART_2 85 vs 83, RART_4 72 vs 77. Largest gaps: RART_11 67 vs 89, RART_1 26 vs 16, RART_3 18 vs 11. There is no type named Polygon_TBD. The catalog name is RART_TBD.</p>
+
+  <h2>Test 2 - Alby and Ann</h2>
+  <p>Ann replaced Tricia. No date on the timing sheet. Each person did both methods on the same counts: Hi-Way 30, Urban 13, Interchange 10. 106 tile passes per method. Per tile: 61.0 sec with generated polygons, 103.7 sec with the new tool. Saved 1 h 15 min 27 sec.</p>
+  <table>
+    <thead><tr><th>AIP</th><th>Generated polygons</th><th>New tool</th><th class="num">Less time</th></tr></thead>
+    <tbody>
+      <tr><td>Alby</td><td>1:10:59</td><td>1:24:12</td><td class="num">15.7% (13 min 13 sec)</td></tr>
+      <tr><td>Ann</td><td>0:36:51</td><td>1:39:05</td><td class="num">62.8% (1 h 2 min 14 sec)</td></tr>
+      <tr><td><strong>Both</strong></td><td><strong>1 h 47 min 50 sec</strong></td><td><strong>3 h 3 min 17 sec</strong></td><td class="num"><strong>41.2%</strong></td></tr>
+    </tbody>
+  </table>
+  <div class="warn">Ann's highway row with generated polygons is 6 min 30 sec for 30 tiles. Alby's same cell is 24 min 12 sec. That row drives most of her 62.8%. Reported as recorded.</div>
+
+  <h3>Alby, both methods</h3>
+  <table>
+    <thead><tr><th>Road type</th><th class="num">Tiles</th><th>With generated polygons</th><th>Without</th><th class="num">Less time on generated</th></tr></thead>
+    <tbody>
+      <tr><td>Hi-Way</td><td class="num">30</td><td>0:24:12</td><td>0:27:23</td><td class="num">11.6%</td></tr>
+      <tr><td>Urban</td><td class="num">13</td><td>0:25:33</td><td>0:25:25</td><td class="num">Without shorter by 8 sec</td></tr>
+      <tr><td>Interchange</td><td class="num">10</td><td>0:21:14</td><td>0:31:24</td><td class="num">32.4%</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Ann, both methods</h3>
+  <p class="muted">Her sheet lists the new tool first, then generated polygons.</p>
+  <table>
+    <thead><tr><th>Road type</th><th class="num">Tiles</th><th>Without</th><th>With generated polygons</th><th class="num">Less time on generated</th></tr></thead>
+    <tbody>
+      <tr><td>Hi-Way</td><td class="num">30</td><td>0:39:37</td><td>0:06:30</td><td class="num">83.6%</td></tr>
+      <tr><td>Urban</td><td class="num">13</td><td>0:31:35</td><td>0:10:40</td><td class="num">66.2%</td></tr>
+      <tr><td>Interchange</td><td class="num">10</td><td>0:27:53</td><td>0:19:41</td><td class="num">29.4%</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Both people, by road type</h3>
+  <table>
+    <thead><tr><th>Road type</th><th class="num">Tiles</th><th>Generated polygons</th><th>New tool</th><th class="num">Less time</th></tr></thead>
+    <tbody>
+      <tr><td>Hi-Way</td><td class="num">60</td><td>0:30:42</td><td>1:07:00</td><td class="num">54.2%</td></tr>
+      <tr><td>Urban</td><td class="num">26</td><td>0:36:13</td><td>0:57:00</td><td class="num">36.5%</td></tr>
+      <tr><td>Interchange</td><td class="num">20</td><td>0:40:55</td><td>0:59:17</td><td class="num">31.0%</td></tr>
+    </tbody>
+  </table>
+
+  <h2>What they said</h2>
+  <p class="muted">These notes came with Test 2. They are not a score, and they are not Test 1.</p>
+  <div class="cols">
+    <div class="box">
+      <h3>Alby</h3>
+      <p>Easier with generated polygons. You do not draw a polygon on each tile. You assign a value to each road section. No workflow break across the two generated-polygon days.</p>
+      <p>Overpasses: the generated polygon is one continuous shape, so the upper piece has to be deleted before the road underneath can be worked. A split from one RART to another, or within the same RART, creates a large polygon that has to be deleted and tagged again.</p>
+    </div>
+    <div class="box">
+      <h3>Ann</h3>
+      <p>Easiest is the generated polygon. Most of the work is tagging: read the road, assign the RART, fix overlaps. No other problem on tiles that already had polygons, except multi-level overlaps.</p>
+      <p>On the new tool, a polygon can snap to another and merge into one shape that is hard to separate. She wants overlap handling improved on multi-level roads, and the straight split kept, because that is the one they use most.</p>
+    </div>
+  </div>
+  <p class="note">Both methods can fuse polygons into one big shape. On the generated path the trigger is a split or an overpass. On the new tool the trigger is a snap-merge. Neither comment says the new tool is unfit.</p>
+
+  <h2>Recordings</h2>
+  <p class="muted">File names do not match the tracker. Shangg is unexplained. The clocks above stay the source for who did which method. QuickTime. Not played for this write-up.</p>
+  <a class="play" target="_blank" rel="noopener" href="https://drive.google.com/file/d/1y__esSapW4dcp2z9VQS-obIaRdk6lVfh/view">AiP2 With Polygon</a>
+  <a class="play" target="_blank" rel="noopener" href="https://drive.google.com/file/d/1fKC68QQEhgpG-QePOyiKeuqVrWzRnCrE/view">AIP1 Without Polygon</a>
+  <a class="play" target="_blank" rel="noopener" href="https://drive.google.com/file/d/14l_EOSyPUibwVVD4xnfvNnuiPqspQytb/view">Shangg with Polygon</a>
+  <a class="play" target="_blank" rel="noopener" href="https://drive.google.com/file/d/1UnPRHuWah4lhOZnheOjcu5by6VPJHOjW/view">Shangg without Polygon</a>
+</main>
 </body>
 </html>
