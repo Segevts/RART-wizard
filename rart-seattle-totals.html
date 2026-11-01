@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Totals</title>
+<style>
+  body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: #16182b; background: #f3f5fb; padding: 12px 14px 10px; }
+  h2 { margin: 0 0 4px; font-size: 18px; color: #141a72; }
+  h3 { margin: 12px 0 6px; font-size: 14px; color: #1f2eb8; }
+  p { margin: 0 0 8px; font-size: 13px; line-height: 1.4; color: #343b55; }
+  .stats { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 4px; }
+  .stat { flex: 1; min-width: 200px; background: #fff; border: 1px solid #e3e7f3; border-radius: 12px; padding: 10px 12px; }
+  .stat span { display: block; font-size: 11px; letter-spacing: .05em; text-transform: uppercase; color: #5c657d; font-weight: 700; }
+  .stat b { display: block; color: #1f2eb8; font-size: 28px; letter-spacing: -.03em; line-height: 1.1; margin: 2px 0; }
+  .stat p { margin: 0; font-size: 12px; color: #343b55; }
+  table { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid #e3e7f3; font-size: 13px; margin: 0 0 8px; }
+  th { text-align: left; background: #1f2eb8; color: #fff; padding: 6px 8px; font-weight: 650; }
+  td { padding: 6px 8px; border-top: 1px solid #e3e7f3; }
+  tr:nth-child(even) td { background: #f3f5fd; }
+  .num { text-align: right; white-space: nowrap; }
+</style>
+</head>
+<body>
+  <h2>Totals</h2>
+  <p>Each test on its own. Do not add the two clocks, and do not average the daily percents.</p>
+  <div class="stats">
+    <div class="stat">
+      <span>Test 1, 21-22 Oct, 100 tiles each method</span>
+      <b>40.4%</b>
+      <p>Generated 2 h 25 min 48 sec. New tool 4 h 4 min 28 sec. Saved 1 h 38 min 40 sec.</p>
+    </div>
+    <div class="stat">
+      <span>Test 2, 106 passes each method</span>
+      <b>41.2%</b>
+      <p>Generated 1 h 47 min 50 sec. New tool 3 h 3 min 17 sec. Saved 1 h 15 min 27 sec.</p>
+    </div>
+  </div>
+  <h3>Test 2 by road type, both people</h3>
+  <table>
+    <thead><tr><th>Road type</th><th class="num">Tiles</th><th>Generated polygons</th><th>New tool</th><th class="num">Less time</th></tr></thead>
+    <tbody>
+      <tr><td>Hi-Way</td><td class="num">60</td><td>0:30:42</td><td>1:07:00</td><td class="num">54.2%</td></tr>
+      <tr><td>Urban</td><td class="num">26</td><td>0:36:13</td><td>0:57:00</td><td class="num">36.5%</td></tr>
+      <tr><td>Interchange</td><td class="num">20</td><td>0:40:55</td><td>0:59:17</td><td class="num">31.0%</td></tr>
+    </tbody>
+  </table>
+  <h3>Typed RART after Test 1, 22 Oct</h3>
+  <p>Volume check. Not a quality audit, and not a Test 2 result.</p>
+  <table>
+    <thead><tr><th></th><th>Generated map</th><th>From-scratch map</th></tr></thead>
+    <tbody>
+      <tr><td>Generic polygons</td><td>2451</td><td>342</td></tr>
+      <tr><td>Still RART_TBD</td><td>1687</td><td>0</td></tr>
+      <tr><td>Typed RART</td><td>340</td><td>342, all RART</td></tr>
+      <tr><td>Other non-RART</td><td>424</td><td>0</td></tr>
+    </tbody>
+  </table>
+  <p>Close: RART_0 66 vs 61, RART_2 85 vs 83, RART_4 72 vs 77. Largest gaps: RART_11 67 vs 89, RART_1 26 vs 16, RART_3 18 vs 11. Per tile, Test 1 was 87.5 sec vs 146.7 sec. Test 2 was 61.0 sec vs 103.7 sec. Generated polygons were faster because the shape was already there. The new tools (Shift+X, Shift+R) are how an empty map, or a missing polygon, gets drawn.</p>
+</body>
+</html>

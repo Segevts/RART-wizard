@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Alby Pacios</title>
+<style>
+  body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: #16182b; background: #f3f5fb; padding: 12px 14px 10px; }
+  h2 { margin: 0; font-size: 18px; color: #141a72; }
+  .sub { margin: 2px 0 8px; font-size: 12px; color: #5c657d; }
+  table { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid #e3e7f3; font-size: 13px; }
+  th { text-align: left; background: #1f2eb8; color: #fff; padding: 6px 8px; font-weight: 650; }
+  td { padding: 6px 8px; border-top: 1px solid #e3e7f3; vertical-align: top; }
+  tr:nth-child(even) td { background: #f3f5fd; }
+  .num { text-align: right; white-space: nowrap; }
+  .road { color: #343b55; font-size: 12px; line-height: 1.35; }
+  .note { margin: 8px 0 0; background: #eef1ff; border: 1px solid #dde3f6; border-radius: 8px; padding: 8px 10px; font-size: 13px; line-height: 1.4; }
+  .links { margin-top: 8px; }
+  a { display: inline-block; margin: 0 6px 0 0; padding: 6px 10px; border-radius: 999px; background: #1f2eb8; color: #fff; text-decoration: none; font-size: 12px; font-weight: 650; }
+</style>
+</head>
+<body>
+  <h2>Alby Pacios</h2>
+  <p class="sub">Test 1 both days, then Test 2 both methods. On the clock: 6 h 14 min 51 sec.</p>
+  <table>
+    <thead><tr><th>When</th><th>Method</th><th class="num">Tiles</th><th class="num">Time</th><th>By road type</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>21 Oct</td><td>Generated polygons</td><td class="num">50</td><td class="num">61 min 42 sec</td>
+        <td class="road">Hi-Way 15, 18 min 1 sec. Urban 23, 22 min 2 sec. Interchange 12, 21 min 39 sec.</td>
+      </tr>
+      <tr>
+        <td>22 Oct</td><td>New tool</td><td class="num">50</td><td class="num">2 h 37 min 58 sec</td>
+        <td class="road">Highway 22, 1:18:02. Urban 16, 0:33:01. Interchange 12, 0:46:54.</td>
+      </tr>
+      <tr>
+        <td>Test 2</td><td>Generated polygons</td><td class="num">53</td><td class="num">1 h 10 min 59 sec</td>
+        <td class="road">Hi-Way 30, 0:24:12. Urban 13, 0:25:33. Interchange 10, 0:21:14.</td>
+      </tr>
+      <tr>
+        <td>Test 2</td><td>New tool</td><td class="num">53</td><td class="num">1 h 24 min 12 sec</td>
+        <td class="road">Hi-Way 30, 0:27:23. Urban 13, 0:25:25. Interchange 10, 0:31:24.</td>
+      </tr>
+    </tbody>
+  </table>
+  <p class="note">Test 2, same 53 tiles: 13 min 13 sec less with generated polygons (15.7%). Urban went the other way by 8 sec. The two October days used different mixes, so those two clocks are not a personal ranking. He found generated polygons easier: assign a value, do not draw each tile. An overpass or a split can force a delete and a retag.</p>
+  <div class="links">
+    <a target="_blank" rel="noopener" href="https://drive.google.com/file/d/1y__esSapW4dcp2z9VQS-obIaRdk6lVfh/view">With polygons</a>
+    <a target="_blank" rel="noopener" href="https://drive.google.com/file/d/1fKC68QQEhgpG-QePOyiKeuqVrWzRnCrE/view">Without polygons</a>
+  </div>
+</body>
+</html>
